@@ -83,11 +83,13 @@ class fisica(object):
         devemos verificar isso para evitar que a funcao
         self.decode seja chamada com números ímpares.
         """
+
         rxBuffer = self.port.read(nBytes)
         rxBufferConcat = self.rxRemain + rxBuffer
         nValid = (len(rxBufferConcat)//2)*2
         rxBufferValid = rxBufferConcat[0:nValid]
         self.rxRemain = rxBufferConcat[nValid:]
+
         try :
             """ As vezes acontece erros na decodificacao
             fora do ambiente linux, isso tenta corrigir

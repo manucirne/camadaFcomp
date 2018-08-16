@@ -46,13 +46,14 @@ def main():
 
     # Faz a recepção dos dados
     print ("Recebendo dados .... ")
-    bytesSeremLidos=com.rx.getBufferLen()
+    #bytesSeremLidos=com.rx.getBufferLen()
   
         
-    rxBuffer, nRx = com.getData(36210)
+    rxBuffer, nRx = com.getData()
+    print(rxBuffer)
 
-    with open("inforecebida2.png", "wb+") as imageFile:
-        imagemrecebida = imageFile.write(rxBuffer)
+    # with open("inforecebida2", "wb+") as imageFile:
+    #     imagemrecebida = imageFile.write(rxBuffer)
 
     # log
     print ("Lido              {} bytes ".format(nRx))
