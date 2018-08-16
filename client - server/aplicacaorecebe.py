@@ -12,8 +12,6 @@ print("comecou")
 
 from enlace import *
 import time
- 
-
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer a
 # comunicaçao
@@ -43,59 +41,25 @@ def main():
     print("comunicação aberta")
 
 
-    # a seguir ha um exemplo de dados sendo carregado para transmissao
-    # voce pode criar o seu carregando os dados de uma imagem. Tente descobrir
-    #como fazer isso
-    print ("gerando dados para transmissao :")
-    
-    # with open("img.jpeg", "rb") as imageFile:
-    #     imagemenviada = imageFile.read()
-    # txBuffer = bytearray(imagemenviada)
-    # txLen = 28070
-    # print(txBuffer)
-        # print(txBufferarray)
-        # lenBuffer = len(imagemenviada)
-        # txBuffer = list()
-        # txBuffer.append(lenBuffer)
-        # txLen = 1
-        # for i in txBufferarray:
-        #     txLen += 1
-        #     txBuffer.append(i)
-
-    ListTxBuffer =list()
-    for i in range(0,100):
-        for x in range(0,256):
-            ListTxBuffer.append(x)
-    txBuffer = bytes(ListTxBuffer)
-    txLen    = len(txBuffer)
-    print(txBuffer)
-
-    #print(txBuffer[0])
-
-    # Transmite dado
-    print("tentado transmitir .... {} bytes".format(txLen))
-    #com.sendData(txLen)
-    com.sendData(txBuffer)
-
-        
+  
     # Atualiza dados da transmissão
     txSize = com.tx.getStatus()
    
 
-    # # Faz a recepção dos dados
-    # print ("Recebendo dados .... ")
-    # bytesSeremLidos=com.rx.getBufferLen()
+    # Faz a recepção dos dados
+    print ("Recebendo dados .... ")
+    bytesSeremLidos=com.rx.getBufferLen()
   
         
-    # rxBuffer, nRx = com.getData(txLen)
+    rxBuffer, nRx = com.getData()
 
-    # with open("recebida.jpeg", "wb+") as imageFile:
-    #     imagemrecebida = imageFile.write(rxBuffer)
+    with open("recebida", "wb+") as imageFile:
+        imagemrecebida = imageFile.write(rxBuffer)
 
-    # # log
-    # print ("Lido              {} bytes ".format(nRx))
+    # log
+    print ("Lido              {} bytes ".format(nRx))
     
-    # print (rxBuffer)
+    print (rxBuffer)
 
     
 
