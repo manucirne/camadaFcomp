@@ -46,21 +46,31 @@ def main():
     #como fazer isso
     print ("gerando dados para transmissao :")
     
-    # with open("img.jpeg", "rb") as imageFile:
-    #     imagemenviada = imageFile.read()
-    #     txBuffer = bytearray(imagemenviada)
+    with open("img.jpeg", "rb") as imageFile:
+        imagemenviada = imageFile.read()
+        txBuffer = bytearray(imagemenviada)
+        txLen = 28070
+        # print(txBufferarray)
+        # lenBuffer = len(imagemenviada)
+        # txBuffer = list()
+        # txBuffer.append(lenBuffer)
+        # txLen = 1
+        # for i in txBufferarray:
+        #     txLen += 1
+        #     txBuffer.append(i)
 
-    ListTxBuffer =list()
-    for x in range(0,20):
-        ListTxBuffer.append(x)
-    txBuffer = bytes(ListTxBuffer)
-    txLen    = len(txBuffer)
+    # ListTxBuffer =list()
+    # for x in range(0,20):
+    #     ListTxBuffer.append(x)
+    # txBuffer = bytes(ListTxBuffer)
+    # txLen    = len(txBuffer)
     print(txLen)
 
-    print(ListTxBuffer)
+    #print(txBuffer[0])
 
     # Transmite dado
     print("tentado transmitir .... {} bytes".format(txLen))
+    #com.sendData(txLen)
     com.sendData(txBuffer)
 
         

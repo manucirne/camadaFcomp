@@ -49,9 +49,9 @@ def main():
     bytesSeremLidos=com.rx.getBufferLen()
   
         
-    rxBuffer, nRx = com.getData(20)
+    rxBuffer, nRx = com.getData(36210)
 
-    with open("inforecebida.jpeg", "wb+") as imageFile:
+    with open("inforecebida2.png", "wb+") as imageFile:
         imagemrecebida = imageFile.write(rxBuffer)
 
     # log

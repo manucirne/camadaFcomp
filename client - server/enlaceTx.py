@@ -34,10 +34,9 @@ class TX(object):
         """ TX thread, to send data in parallel with the code
         """
         while not self.threadStop:
-            print("iniciou thread")
             if(self.threadMutex):
                 self.transLen    = self.fisica.write(self.buffer)
-                #print("O tamanho transmitido. IMpressao dentro do thread {}" .format(self.transLen))
+                print("O tamanho transmitido. IMpressao dentro do thread {}" .format(self.transLen))
                 self.threadMutex = False
 
     def threadStart(self):
