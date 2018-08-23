@@ -33,7 +33,7 @@ fname = "null"
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM3"                  # Windows(variacao de)
+serialName = "COM4"                  # Windows(variacao de)
 
 
 
@@ -131,7 +131,7 @@ def main():
     #     txBuffer = bytearray(imagemenviada)
     # txBuffer = bytes(txBuffer)
     ListTxBuffer =list()
-    for x in range(0,10):
+    for x in range(0,100):
         ListTxBuffer.append(x)
     txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
@@ -151,13 +151,20 @@ def main():
         if txBuffer[i] == end[0]:
             if txBuffer[i+1] == end[1]:
                 if txBuffer[i+2] == end[2]:
-                    if txBuffer[i+3] == end[2]:
+                    if txBuffer[i+3] == end[3]:
                         if txBuffer[i+4] == end[4]:
-                            txBuffer = txBuffer[:i] + stuffing + end + stuffing + data[i+4:]
+                            zero = bytes([txBuffer[i-1]])
+                            s = bytes([txBuffer[i+5]])
+                            print("zero", zero)
+                            print("seis",s)
+                            print("stf",stuffing)
+                            if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
+                                txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
+                                print("txcom: ", txBuffer)
 
     txLen    = len(txBuffer)
     print("txLen: ",txLen)
-    tamanhoEmByte = (txLen).to_bytes(2,byteorder='big')
+    tamanhoEmByte = (txLen).to_bytes(8,byteorder='big')
 
     print("tamanhosByte: ",tamanhoEmByte) 
     print("final: ",end)
