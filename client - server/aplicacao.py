@@ -15,6 +15,7 @@ import time
 from tkinter import *
 from PIL import ImageTk, Image
 import os
+import datetime
 
 
 from tkinter.filedialog import askopenfilename, askopenfile
@@ -32,7 +33,7 @@ fname = "null"
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM3"                  # Windows(variacao de)
+serialName = "COM5"                  # Windows(variacao de)
 
 
 
@@ -40,12 +41,13 @@ print("porta COM aberta com sucesso")
 
 
 
+
+
 def main():
     # Inicializa enlace ... variavel com possui todos os metodos e propriedades do enlace, que funciona em threading
     com = enlace(serialName)
 
-    # Ativa comunicacao
-    com.enable()
+    
 
     #verificar que a comunicação foi aberta
     print("comunicação aberta")
@@ -110,6 +112,14 @@ def main():
     Application(root)
     root.mainloop()
 
+    #Ativa comunicacao
+
+    #filename = askopenfilename()
+
+
+    com.enable()
+
+    Tinicio = time.time()
 
     # a seguir ha um exemplo de dados sendo carregado para transmissao
     # voce pode criar o seu carregando os dados de uma imagem. Tente descobrir
@@ -119,13 +129,14 @@ def main():
     with open("imagem.png", "rb") as imageFile:
         imagemenviada = imageFile.read()
         txBuffer = bytearray(imagemenviada)
-
+    txBuffer = bytes(txBuffer)
     # ListTxBuffer =list()
     # for x in range(0,100):
     #     ListTxBuffer.append(x)
     # txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
     print(txLen)
+
 
     # Transmite dado
     # print("tentado transmitir .... {} bytes".format())
@@ -137,7 +148,12 @@ def main():
     print("Comunicação encerrada")
     print("-------------------------")
     com.disable()
-
+    Tfinal = time.time()
+    deltaT = Tfinal - Tinicio
+    baudrate = 115200
+    print("Tempo: ", deltaT)
+    print("Velocidade Real:   ", txLen/deltaT)
+    print("Velocidade Esperada:   ", (1/10)*baudrate/txLen)
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
     main()
