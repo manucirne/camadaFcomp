@@ -12,6 +12,7 @@ print("comecou")
 
 from enlace import *
 import time
+import binascii
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer a
 # comunicaçao
@@ -21,8 +22,8 @@ import time
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM5"                  # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1411"   # Mac    (variacao de)
+#serialName = "COM5"                   # Windows(variacao de)
 
 
 
@@ -53,13 +54,36 @@ def main():
         
     rxBuffer, nRx = com.getData()
 
+    print("rxBuffer: ", rxBuffer)
+
+    end = bytes([1,2,3,4,5])
+    stuffing = bytes(1)
+
+
+    for i in range(8, len(rxBuffer)-1): 
+        if bytes(rxBuffer[i+1:i+6]) == end:
+            print("entrou no if 1")
+
+            if  bytes([rxBuffer[i-1]]) == stuffing and bytes([rxBuffer[i+6]]) == stuffing:
+                print("entrou no if 2")
+                zero1 = i
+                zero2 = i+6
+                rxBuffer = rxBuffer[:zero1] + rxBuffer[zero1+1:zero2] + rxBuffer[zero2+1:]
+
+            else:
+                print("Encontramos o fim!! :)")
+                print(i-7)
+
+
+
+
     with open("recebida", "wb+") as imageFile:
         imagemrecebida = imageFile.write(rxBuffer)
 
     # log
     print ("Lido              {} bytes ".format(nRx))
     
-    print (rxBuffer)
+    print ("rxBuffer apos retirada: ", rxBuffer)
 
     
 
