@@ -33,7 +33,7 @@ fname = "null"
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM6"                  # Windows(variacao de)
+serialName = "COM3"                  # Windows(variacao de)
 
 
 
@@ -126,31 +126,46 @@ def main():
     #como fazer isso
     print ("gerando dados para transmissao :")
     
-    with open(fname, "rb") as imageFile:
-        imagemenviada = imageFile.read()
-        txBuffer = bytearray(imagemenviada)
-    txBuffer = bytes(txBuffer)
-    # ListTxBuffer =list()
-    # for x in range(0,100):
-    #     ListTxBuffer.append(x)
-    # txBuffer = bytes(ListTxBuffer)
+    # with open(fname, "rb") as imageFile:
+    #     imagemenviada = imageFile.read()
+    #     txBuffer = bytearray(imagemenviada)
+    # txBuffer = bytes(txBuffer)
+    ListTxBuffer =list()
+    for x in range(0,10):
+        ListTxBuffer.append(x)
+    txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
     print("txLen: ",txLen)
 
+
+    # tamanho = 1000
+  
     #HEAD
-    lenbin = bin(txLen)
+    #tamanhoEmByte = bytes([txLen])
+    end = bytes([1,2,3,4,5])
+    stuffing = bytes(1)
+    
+    
+    for i in range(txLen): 
+        data = txBuffer[i:]
+        if txBuffer[i] == end[0]:
+            if txBuffer[i+1] == end[1]:
+                if txBuffer[i+2] == end[2]:
+                    if txBuffer[i+3] == end[2]:
+                        if txBuffer[i+4] == end[4]:
+                            txBuffer = txBuffer[:i] + stuffing + end + stuffing + data[i+4:]
 
-    if len(lenbin) < 16:
-        lenbin = bin(txLen)[2:].zfill(16)
-        print("tamanho da parada: ",lenbin)
-    size1 = lenbin[:8]
-    size2 = lenbin[8:]
-    print("tamanhos 1 e dois respec: ", size1,size2)
+    txLen    = len(txBuffer)
+    print("txLen: ",txLen)
+    tamanhoEmByte = (txLen).to_bytes(2,byteorder='big')
 
+    print("tamanhosByte: ",tamanhoEmByte) 
+    print("final: ",end)
+    print("Stuffing: ",stuffing)
+    head = tamanhoEmByte
+    print("head: ",head)
 
-    #EOP
-    end = [bin(1),bin(2),bin(3),bin(4),bin(5)]
-
+    txBuffer = head + txBuffer + end
 
 
     # Transmite dado
@@ -165,7 +180,7 @@ def main():
     com.disable()
    
     baudrate = 115200
-    print("Velocidade Esperada:   ", (1/10)*baudrate/txLen)
+    print("Velocidade Esperada:   ", 10*txLen/baudrate)
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
     main()
