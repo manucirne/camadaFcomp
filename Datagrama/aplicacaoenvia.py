@@ -32,8 +32,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-#serialName = "COM4"                  # Windows(variacao de)
+#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+serialName = "COM4"                  # Windows(variacao de)
 
 
 
@@ -143,7 +143,7 @@ def main():
   
     #HEAD
     #tamanhoEmByte = bytes([txLen])
-    end = bytes([1,2,3,4,5])
+    end = bytes([0,2,3,4,5])
     stuffing = bytes(1)
     
     
@@ -169,6 +169,7 @@ def main():
     payload = txBuffer
     txBuffer = head + txBuffer + end
     overhead = len(payload)/len(txBuffer)
+    throughput = payload/deltaT
 
 
     # Transmite dado
@@ -176,7 +177,8 @@ def main():
     com.sendData(txBuffer)
 
     print("-------------------------")
-    print("OverHead:     ", overhead)
+    print("OverHead:     ", overhead, "%")
+    print("Throughput:       ", throughput,"bytes/s") 
     print("Head: ",head)
     print("Stuffing: ",stuffing)
     print("EOF: ",end)
