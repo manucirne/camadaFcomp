@@ -171,12 +171,18 @@ def main():
     head = tamanhoEmByte
     print("head: ",head)
 
+    payload = txBuffer
     txBuffer = head + txBuffer + end
+    overhead = len(txBuffer)/len(payload)
 
 
     # Transmite dado
     # print("tentado transmitir .... {} bytes".format())
     com.sendData(txBuffer)
+
+    print("-------------------------")
+    print("OverHead:     ", overhead) # Não é ao contrario??
+    print("-------------------------")
     
 
     # Encerra comunicação
@@ -185,10 +191,7 @@ def main():
     print("-------------------------")
     com.disable()
    
-    baudrate = 115200
-    print("-------------------------")
-    print("Tempo Esperado:   ", 10*len(txBuffer)/baudrate)
-    print("-------------------------")
+
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
     main()

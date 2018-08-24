@@ -34,22 +34,24 @@ class TX(object):
         """ TX thread, to send data in parallel with the code
         """
         
-        while not self.threadStop:
-            
+        while not self.threadStop:  
             if(self.threadMutex):
-                
-                Tinicio = time.clock()
+                Tinicio = time.time()
                 print("Tinicio: ",Tinicio)
                 self.transLen    = self.fisica.write(self.buffer)
                 #print("O tamanho transmitido. IMpressao dentro do thread {}" .format(self.transLen))
                 self.threadMutex = False
-                Tfinal = time.clock()
+                Tfinal = time.time()
                 print("Tfinal: ",Tfinal)
                 deltaT = (Tfinal - Tinicio)
                 print("DeltaT: ",deltaT)
                 txLen = len(self.buffer)
+                baudrate = 115200
+                throughput = txLen/deltaT
                 print("-------------------------")
-                print("Tempo Medido:   ", deltaT)  # float division by zero
+                print("Tempo Esperado:   ", (1/10)*txLen/baudrate,"s")
+                print("Tempo Medido:     ", deltaT,"s") 
+                print("Throughput:       ", throughput,"bytes/s") 
                 print("-------------------------")
 
     def threadStart(self):

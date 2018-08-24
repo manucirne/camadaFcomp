@@ -22,7 +22,7 @@ import binascii
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1411"   # Mac    (variacao de)
+serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
 #serialName = "COM5"                   # Windows(variacao de)
 
 
@@ -41,7 +41,6 @@ def main():
     #verificar que a comunicação foi aberta
     print("comunicação aberta")
 
-
   
     # Atualiza dados da transmissão
     txSize = com.tx.getStatus()
@@ -54,44 +53,57 @@ def main():
         
     rxBuffer, nRx = com.getData()
 
+
     print("rxBuffer: ", rxBuffer)
+    print("rxBuffer[6:9]: ", bytes(rxBuffer[6:8]))
+
 
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
 
 
+    tamanho_esperado = int.from_bytes(rxBuffer[6:8], byteorder="big")
+
+
+    print("Tamanho Informado no Head:    ", tamanho_esperado)
+
+
+    cont_s = 0
     for i in range(8, len(rxBuffer)-1): 
         if bytes(rxBuffer[i+1:i+6]) == end:
-            print("entrou no if 1")
-
             if  bytes([rxBuffer[i-1]]) == stuffing and bytes([rxBuffer[i+6]]) == stuffing:
-                print("entrou no if 2")
+                cont_s += 2
                 zero1 = i
                 zero2 = i+6
                 rxBuffer = rxBuffer[:zero1] + rxBuffer[zero1+1:zero2] + rxBuffer[zero2+1:]
-
             else:
+                tamanho_recebido = i-7+cont_s
                 print("Encontramos o fim!! :)")
-                print(i-7)
+                print("Tamanho da mensagem recebida: ", tamanho_recebido)
+                print("Posição de início do EOP: ",i)
 
 
+    if tamanho_esperado != tamanho_recebido:
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
 
 
     with open("recebida", "wb+") as imageFile:
         imagemrecebida = imageFile.write(rxBuffer)
 
+
     # log
-    print ("Lido              {} bytes ".format(nRx))
-    
+    print ("Lido              {} bytes ".format(nRx)) 
     print ("rxBuffer apos retirada: ", rxBuffer)
 
-    
 
     # Encerra comunicação
     print("-------------------------")
     print("Comunicação encerrada")
     print("-------------------------")
     com.disable()
+
 
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
