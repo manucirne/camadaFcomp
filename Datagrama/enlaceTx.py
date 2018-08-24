@@ -37,14 +37,11 @@ class TX(object):
         while not self.threadStop:  
             if(self.threadMutex):
                 Tinicio = time.time()
-                print("Tinicio: ",Tinicio)
                 self.transLen    = self.fisica.write(self.buffer)
                 #print("O tamanho transmitido. IMpressao dentro do thread {}" .format(self.transLen))
                 self.threadMutex = False
                 Tfinal = time.time()
-                print("Tfinal: ",Tfinal)
                 deltaT = (Tfinal - Tinicio)
-                print("DeltaT: ",deltaT)
                 txLen = len(self.buffer)
                 baudrate = 115200
                 throughput = txLen/deltaT
