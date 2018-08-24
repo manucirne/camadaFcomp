@@ -167,9 +167,6 @@ def main():
 
     
     head = tamanhoEmByte
-    print("Head: ",head)
-    print("Stuffing: ",stuffing)
-    print("EOF: ",end)
 
     payload = txBuffer
     txBuffer = head + txBuffer + end
