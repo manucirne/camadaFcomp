@@ -170,7 +170,7 @@ def main():
 
     payload = txBuffer
     txBuffer = head + txBuffer + end
-    overhead = len(txBuffer)/len(payload)
+    overhead = len(payload)/len(txBuffer)
 
 
     # Transmite dado
