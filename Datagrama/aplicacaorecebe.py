@@ -67,7 +67,7 @@ def main():
 
     print("Tamanho Informado no Head:    ", tamanho_esperado)
 
-
+    EOP_encontrado = False
     cont_s = 0
     for i in range(8, len(rxBuffer)-1): 
         if bytes(rxBuffer[i+1:i+6]) == end:
@@ -81,11 +81,17 @@ def main():
                 print("Encontramos o fim!! :)")
                 print("Tamanho da mensagem recebida: ", tamanho_recebido)
                 print("Posição de início do EOP: ",i)
+                EOP_encontrado = True
 
 
     if tamanho_esperado != tamanho_recebido:
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
         print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+
+    if not EOP_encontrado:
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        print("ERRO!! O EOP não foi localizado.")
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
 
 
