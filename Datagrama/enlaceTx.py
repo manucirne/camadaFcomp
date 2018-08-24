@@ -49,7 +49,7 @@ class TX(object):
                 baudrate = 115200
                 throughput = txLen/deltaT
                 print("-------------------------")
-                print("Tempo Esperado:   ", (1/10)*txLen/baudrate,"s")
+                print("Tempo Esperado:   ", (10)*txLen/baudrate,"s")
                 print("Tempo Medido:     ", deltaT,"s") 
                 print("Throughput:       ", throughput,"bytes/s") 
                 print("-------------------------")
