@@ -92,6 +92,7 @@ class fisica(object):
         rxBufferValid = rxBufferConcat[0:nValid]
         self.rxRemain = rxBufferConcat[nValid:]
 
+        print(rxBufferValid)
         try :
             """ As vezes acontece erros na decodificacao
             fora do ambiente linux, isso tenta corrigir

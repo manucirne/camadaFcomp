@@ -53,6 +53,10 @@ def main():
         
     rxBuffer, nRx = com.getData()
 
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("rxBuffer: ", rxBuffer)
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+
 
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
@@ -63,21 +67,24 @@ def main():
 
     print("Tamanho Informado no Head:    ", tamanho_esperado)
 
-    EOP_encontrado = False
+
     cont_s = 0
     for i in range(8, len(rxBuffer)-1): 
+
         if bytes(rxBuffer[i+1:i+6]) == end:
+
             if  bytes([rxBuffer[i-1]]) == stuffing and bytes([rxBuffer[i+6]]) == stuffing:
                 cont_s += 2
                 zero1 = i
                 zero2 = i+6
                 rxBuffer = rxBuffer[:zero1] + rxBuffer[zero1+1:zero2] + rxBuffer[zero2+1:]
+
             else:
                 tamanho_recebido = i-7+cont_s
-                print("Encontramos o fim!! :)")
                 print("Tamanho da mensagem recebida: ", tamanho_recebido)
-                print("Posição de início do EOP: ",i)
-                EOP_encontrado = True
+                inicioEOP = i
+                print("Posição de início do EOP:     ",inicioEOP)
+                print("Encontramos o fim!! :)")
 
 
     if tamanho_esperado != tamanho_recebido:
@@ -85,19 +92,16 @@ def main():
         print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
 
-    if not EOP_encontrado:
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-        print("ERRO!! O EOP não foi localizado.")
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
 
-
-    with open("recebida", "wb+") as imageFile:
-        imagemrecebida = imageFile.write(rxBuffer)
+    with open("recebida.png", "wb+") as imageFile:
+        imagemrecebida = imageFile.write(rxBuffer[8:inicioEOP])
 
 
     # log
     print ("Lido              {} bytes ".format(nRx)) 
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
     print ("rxBuffer apos retirada: ", rxBuffer)
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
 
     # Encerra comunicação
