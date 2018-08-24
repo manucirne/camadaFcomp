@@ -165,11 +165,11 @@ def main():
     print("txLen: ",txLen)
     tamanhoEmByte = (txLen).to_bytes(8,byteorder='big')
 
-    print("tamanhosByte: ",tamanhoEmByte) 
-    print("final: ",end)
-    print("Stuffing: ",stuffing)
+    
     head = tamanhoEmByte
-    print("head: ",head)
+    print("Head: ",head)
+    print("Stuffing: ",stuffing)
+    print("EOF: ",end)
 
     payload = txBuffer
     txBuffer = head + txBuffer + end
@@ -182,6 +182,9 @@ def main():
 
     print("-------------------------")
     print("OverHead:     ", overhead) # Não é ao contrario??
+    print("Head: ",head)
+    print("Stuffing: ",stuffing)
+    print("EOF: ",end)
     print("-------------------------")
     
 
