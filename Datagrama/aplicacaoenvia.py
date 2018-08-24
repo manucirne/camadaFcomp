@@ -177,7 +177,7 @@ def main():
     com.sendData(txBuffer)
 
     print("-------------------------")
-    print("OverHead:     ", overhead, "%")
+    print("OverHead:         ", overhead, "%")
     print("Throughput:       ", throughput,"bytes/s") 
     print("Head: ",head)
     print("Stuffing: ",stuffing)
