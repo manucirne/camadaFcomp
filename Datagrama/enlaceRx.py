@@ -107,7 +107,6 @@ class RX(object):
 #             time.sleep(0.05)
 # #                 
 #         return(self.getBuffer(size))
-        print("entrou no getNdata")
         x = self.getBufferLen()
         time.sleep(1)
         
@@ -115,11 +114,9 @@ class RX(object):
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
         while((self.getBufferLen() == 0) or (self.getBufferLen() != x)):
             time.sleep(1)
-            print("lenbuffer:   ",x)
             x = self.getBufferLen()
             time.sleep(1)
 
-        print("lenbuffer fora:   ",x)
         return(self.getBuffer(x))
 
 

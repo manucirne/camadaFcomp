@@ -54,10 +54,6 @@ def main():
     rxBuffer, nRx = com.getData()
 
 
-    print("rxBuffer: ", rxBuffer)
-    print("rxBuffer[6:9]: ", bytes(rxBuffer[6:8]))
-
-
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
 

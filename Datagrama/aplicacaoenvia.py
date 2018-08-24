@@ -137,7 +137,6 @@ def main():
             ListTxBuffer.append(x)
         txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
-    print("txLen: ",txLen)
 
 
     # tamanho = 1000
@@ -159,7 +158,6 @@ def main():
                             s = bytes([txBuffer[i+5]])
                             if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
                                 txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
-                                print("txcom: ", txBuffer)
 
     txLen    = len(txBuffer)
     print("txLen: ",txLen)
@@ -178,7 +176,7 @@ def main():
     com.sendData(txBuffer)
 
     print("-------------------------")
-    print("OverHead:     ", overhead) # Não é ao contrario??
+    print("OverHead:     ", overhead)
     print("Head: ",head)
     print("Stuffing: ",stuffing)
     print("EOF: ",end)
