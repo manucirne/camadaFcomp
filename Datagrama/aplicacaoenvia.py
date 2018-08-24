@@ -32,8 +32,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM4"                  # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+#serialName = "COM4"                  # Windows(variacao de)
 
 
 
@@ -126,14 +126,16 @@ def main():
     #como fazer isso
     print ("gerando dados para transmissao :")
     
-    # with open(fname, "rb") as imageFile:
-    #     imagemenviada = imageFile.read()
-    #     txBuffer = bytearray(imagemenviada)
-    # txBuffer = bytes(txBuffer)
-    ListTxBuffer =list()
-    for x in range(0,100):
-        ListTxBuffer.append(x)
-    txBuffer = bytes(ListTxBuffer)
+    if fname != "null":
+        with open(fname, "rb") as imageFile:
+            imagemenviada = imageFile.read()
+            txBuffer = bytearray(imagemenviada)
+        txBuffer = bytes(txBuffer)
+    else:
+        ListTxBuffer =list()
+        for x in range(0,100):
+            ListTxBuffer.append(x)
+        txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
     print("txLen: ",txLen)
 
@@ -155,9 +157,6 @@ def main():
                         if txBuffer[i+4] == end[4]:
                             zero = bytes([txBuffer[i-1]])
                             s = bytes([txBuffer[i+5]])
-                            print("zero", zero)
-                            print("seis",s)
-                            print("stf",stuffing)
                             if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
                                 txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
                                 print("txcom: ", txBuffer)
@@ -187,7 +186,9 @@ def main():
     com.disable()
    
     baudrate = 115200
-    print("Velocidade Esperada:   ", 10*txLen/baudrate)
+    print("-------------------------")
+    print("Tempo Esperado:   ", 10*len(txBuffer)/baudrate)
+    print("-------------------------")
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
     main()
