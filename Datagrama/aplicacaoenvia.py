@@ -17,7 +17,6 @@ from PIL import ImageTk, Image
 import os
 import datetime
 
-
 from tkinter.filedialog import askopenfilename, askopenfile
 from tkinter.messagebox import showerror
 
@@ -143,7 +142,7 @@ def main():
   
     #HEAD
     #tamanhoEmByte = bytes([txLen])
-    end = bytes([0,2,3,4,5])
+    end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
     
     
@@ -163,26 +162,20 @@ def main():
     print("txLen: ",txLen)
     tamanhoEmByte = (txLen).to_bytes(8,byteorder='big')
 
-    
+    baudrate = 115200
     head = tamanhoEmByte
-
     payload = txBuffer
+    deltaT = (10)*txLen/baudrate
+
     txBuffer = head + txBuffer + end
     overhead = len(payload)/len(txBuffer)
-    throughput = payload/deltaT
+    throughput = len(payload)/deltaT
 
 
     # Transmite dado
     # print("tentado transmitir .... {} bytes".format())
     com.sendData(txBuffer)
 
-    print("-------------------------")
-    print("OverHead:         ", overhead, "%")
-    print("Throughput:       ", throughput,"bytes/s") 
-    print("Head: ",head)
-    print("Stuffing: ",stuffing)
-    print("EOF: ",end)
-    print("-------------------------")
     
 
     # Encerra comunicação
@@ -191,6 +184,14 @@ def main():
     print("-------------------------")
     com.disable()
    
+
+    print("-------------------------") 
+    print("Throughput:       ", throughput,"bytes/s")
+    print("OverHead:         ", overhead, "%") 
+    print("Head: ",head)
+    print("Stuffing: ",stuffing)
+    print("EOF: ",end)
+    print("-------------------------")
 
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":

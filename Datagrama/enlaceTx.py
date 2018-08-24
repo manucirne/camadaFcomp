@@ -12,6 +12,8 @@ import time
 
 # Threads
 import threading
+from aplicacaoenvia import *
+
 
 # Class
 class TX(object):
@@ -44,11 +46,11 @@ class TX(object):
                 deltaT = (Tfinal - Tinicio)
                 txLen = len(self.buffer)
                 baudrate = 115200
-                
                 print("-------------------------")
                 print("Tempo Esperado:   ", (10)*txLen/baudrate,"s")
                 print("Tempo Medido:     ", deltaT,"s") 
                 print("-------------------------")
+
 
     def threadStart(self):
         """ Starts TX thread (generate and run)
@@ -101,4 +103,6 @@ class TX(object):
         """ Return true if a transmission is ongoing
         """
         return(self.threadMutex)
+
+
 
