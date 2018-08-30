@@ -38,9 +38,27 @@ serialName = "COM4"                  # Windows(variacao de)
 
 print("porta COM aberta com sucesso")
 
+def empacotamento(txLen,txBuffer,end, stuffing):
+        #HEAD
+    #tamanhoEmByte = bytes([txLen])        
+    
+    for i in range(txLen): 
+        data = txBuffer[i:]
+        if txBuffer[i] == end[0]:
+            if txBuffer[i+1] == end[1]:
+                if txBuffer[i+2] == end[2]:
+                    if txBuffer[i+3] == end[3]:
+                        if txBuffer[i+4] == end[4]:
+                            zero = bytes([txBuffer[i-1]])
+                            s = bytes([txBuffer[i+5]])
+                            if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
+                                txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
 
+    txLen    = len(txBuffer)
+    print("txLen: ",txLen)
+    tamanhoEmByte = (txLen).to_bytes(2,byteorder='big')
 
-
+    return txLen, tamanhoEmByte, txBuffer
 
 def main():
     # Inicializa enlace ... variavel com possui todos os metodos e propriedades do enlace, que funciona em threading
@@ -138,36 +156,20 @@ def main():
     txLen    = len(txBuffer)
 
 
-    # tamanho = 1000
-  
-    #HEAD
-    #tamanhoEmByte = bytes([txLen])
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
-    
-    
-    for i in range(txLen): 
-        data = txBuffer[i:]
-        if txBuffer[i] == end[0]:
-            if txBuffer[i+1] == end[1]:
-                if txBuffer[i+2] == end[2]:
-                    if txBuffer[i+3] == end[3]:
-                        if txBuffer[i+4] == end[4]:
-                            zero = bytes([txBuffer[i-1]])
-                            s = bytes([txBuffer[i+5]])
-                            if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
-                                txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
 
-    txLen    = len(txBuffer)
-    print("txLen: ",txLen)
-    tamanhoEmByte = (txLen).to_bytes(8,byteorder='big')
-
+    # tamanho = 1000
+    
+    txLen, tamanhoEmByte, txBuffer = empacotamento(txLen,txBuffer,end,stuffing)
+    vazios = bytes(6)
     baudrate = 115200
-    head = tamanhoEmByte
+    head = vazios + tamanhoEmByte
     payload = txBuffer
     deltaT = (10)*txLen/baudrate
+    
 
-    txBuffer = head + txBuffer + end
+    txBuffer =  head + txBuffer + end
     overhead = len(payload)/len(txBuffer)
     throughput = len(payload)/deltaT
 
