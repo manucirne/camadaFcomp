@@ -160,11 +160,12 @@ def main():
     stuffing = bytes(1)
 
     # tamanho = 1000
-    
+
+    tipo = 1
     txLen, tamanhoEmByte, txBuffer = empacotamento(txLen,txBuffer,end,stuffing)
-    vazios = bytes(6)
+    vazios = bytes(5)
     baudrate = 115200
-    head = vazios + tamanhoEmByte
+    head = vazios + tipoDeMensagem + tamanhoEmByte
     payload = txBuffer
     deltaT = (10)*txLen/baudrate
     
@@ -176,6 +177,17 @@ def main():
 
     # Transmite dado
     # print("tentado transmitir .... {} bytes".format())
+    # while (tipo != 5) or (tipo != 6):
+    #     if (tipo == 1) or (tipo == 3):
+    #         payload = bytes(0)
+    #         tamanhoEmByte = (len(payload)).to_bytes(2,byteorder='big')
+    #         head = vazio + bytes([tipo]) + tamanhoEmByte
+    #         com.sendData(head)
+    #         time.sleep(5)
+    #         com.getData()
+    #     else:
+
+
     com.sendData(txBuffer)
 
     
