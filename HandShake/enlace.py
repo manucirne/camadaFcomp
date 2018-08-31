@@ -57,9 +57,11 @@ class enlace(object):
         tentativas = 0
         resposta = False
         while tipo < 6:
+
             if tipo == 1:
                 self.tx.sendBuffer(data, 1)
                 data, lenData, tipo = self.getData()
+
             if tipo == 2:
                 resposta = True
                 self.tx.sendBuffer(data, 3)
@@ -78,7 +80,7 @@ class enlace(object):
 
         while (tipo == 6) and (tentativas < 6):
             self.tx.sendBuffer(data, 4)
-            data, lenData, tipo = self.etData()
+            data, lenData, tipo = self.getData()
             if tipo == 5:
                 print("Mensagem enviada corretamente")
                 tipo = 8
@@ -90,6 +92,8 @@ class enlace(object):
         Return the byte array and the size of the buffer
         """
         # print('entrou na leitura e tentara ler ' + str(size) )
+
         data, tipo = self.rx.getNData()
+        
        
         return(data, len(data), tipo)

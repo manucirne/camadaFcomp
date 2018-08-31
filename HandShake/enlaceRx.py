@@ -109,12 +109,14 @@ class RX(object):
         
         #if self.getBufferLen() < size:
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
+        time.sleep(5)
         size = int.from_bytes(self.buffer[6:8], byteorder="big")
 
         print("seixe:        ", size)
 
         while(self.getBufferLen() < size) or size == 0:
             time.sleep(0.05)
+            print("sendData!!!!!!!!!!!!")
 #               
         self.buffer = self.desempacotamento()[1]
         tipo = self.desempacotamento()[5]
