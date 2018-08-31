@@ -111,11 +111,15 @@ class RX(object):
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
         size = int.from_bytes(self.buffer[6:8], byteorder="big")
 
+        print("seixe:        ", size)
 
-        while(self.getBufferLen() < size):
+        while(self.getBufferLen() < size) or size == 0:
             time.sleep(0.05)
-#                 
-        return(self.desempacotamento()[1], self.desempacotamento()[5])
+#               
+        self.buffer = self.desempacotamento()[1]
+        tipo = self.desempacotamento()[5]
+
+        return(self.buffer, tipo)
 
 
     def clearBuffer(self):
@@ -126,6 +130,7 @@ class RX(object):
     def desempacotamento(self):
         global end, stuffing, EOP_encontrado
         cont_s = 0
+        print("self.buffer:      ",   self.buffer)
         tipo = self.buffer[5]
         tamanho_esperado = int.from_bytes(self.buffer[6:8], byteorder="big")
         if tipo == bytes([4]):

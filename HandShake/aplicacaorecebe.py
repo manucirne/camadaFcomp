@@ -22,44 +22,12 @@ import binascii
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
+serialName = "/dev/tty.usbmodem1411"   # Mac    (variacao de)
 #serialName = "COM5"                   # Windows(variacao de)
 
 
 
 print("porta COM aberta com sucesso")
-
-def desempacotamento(rxBuffer,end,stuffing,EOP_encontrado):
-    cont_s = 0
-    for i in range(8, len(rxBuffer)-1): 
-
-        if bytes(rxBuffer[i+1:i+6]) == end:
-
-            if  bytes([rxBuffer[i-1]]) == stuffing and bytes([rxBuffer[i+6]]) == stuffing:
-                cont_s += 2
-                zero1 = i
-                zero2 = i+6
-                rxBuffer = rxBuffer[:zero1] + rxBuffer[zero1+1:zero2] + rxBuffer[zero2+1:]
-
-            else:
-                tamanho_recebido = i-7+cont_s
-                print("Tamanho da mensagem recebida: ", tamanho_recebido)
-                inicioEOP = i
-                print("Posição de início do EOP:     ",inicioEOP)
-                print("Encontramos o fim!! :)")
-                EOP_encontrado = True
-    return EOP_encontrado, rxBuffer, inicioEOP, tamanho_recebido
-
-def erros(tamanho_esperado,tamanho_recebido,EOP_encontrado):
-    if tamanho_esperado != tamanho_recebido:
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-        print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-
-    if not EOP_encontrado:
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-        print("ERRO!! O EOP não foi localizado.")
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
 
 
 def main():

@@ -31,8 +31,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM7"                  # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+#serialName = "COM7"                  # Windows(variacao de)
 
 
 

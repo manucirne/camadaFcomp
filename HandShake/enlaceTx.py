@@ -90,14 +90,14 @@ class TX(object):
         
         baudrate = 115200
         
-        txLen, tamanhoEmByte, payload =  empacotamento(data, end, stuffing, tipo)
+        txLen, tamanhoEmByte, payload =  self.empacotamento(data, end, stuffing, tipo)
 
         deltaT = (10)*txLen/baudrate
 
         vazios = bytes(5)
         tipoDeMensagem = bytes([tipo])
         head = vazios + tipoDeMensagem + tamanhoEmByte
-        txBuffer =  head + txBuffer + end
+        txBuffer =  head + payload + end
         overhead = len(payload)/len(txBuffer)
         throughput = len(payload)/deltaT
 
@@ -134,7 +134,7 @@ class TX(object):
         return(self.threadMutex)
 
 
-    def empacotamento(data,end, stuffing):
+    def empacotamento(self,data,end, stuffing, tipo):
         #HEAD
     #tamanhoEmByte = bytes([txLen]) 
         
