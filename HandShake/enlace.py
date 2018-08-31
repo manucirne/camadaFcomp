@@ -53,15 +53,43 @@ class enlace(object):
     def sendData(self, data):
         """ Send data over the enlace interface
         """
-        
+        tipo = 1
+        tentativas = 0
+        resposta = False
+        while tipo < 6:
+            if tipo == 1:
+                self.tx.sendBuffer(data, 1)
+                data, lenData, tipo = getData()
+            if tipo == 2:
+                resposta = True
+                self.tx.sendBuffer(data, 3)
+                time.sleep(1)
+                self.tx.sendBuffer(data, 4)
+                data, lenData, tipo = getData()
+            if tipo == 5 and  resposta:
+                print("Mensagem enviada corretamente")
+                tipo = 8
+            else:
+                print("Erro no recebimento de tipo")
+                break
+        if tipo == 6:
+            print("Erro na mensagem - tipo 6")
+            print("Reiniciando")
 
-        self.tx.sendBuffer(data)
+        while (tipo == 6) and (tentativas < 6):
+            self.tx.sendBuffer(data, 4)
+            data, lenData, tipo = getData()
+            if tipo == 5:
+                print("Mensagem enviada corretamente")
+                tipo = 8
+        if tipo != 8:
+            print("Erro na mensagem- tipo 6 - tentativas esgotadas")
 
     def getData(self): #, size):
         """ Get n data over the enlace interface
         Return the byte array and the size of the buffer
         """
         # print('entrou na leitura e tentara ler ' + str(size) )
-        data = self.rx.getNData()
+        data, tipo = self.rx.getNData()
        
-        return(data, len(data))
+        return(data, len(data), tipo)

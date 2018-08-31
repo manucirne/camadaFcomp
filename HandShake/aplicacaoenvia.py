@@ -38,28 +38,6 @@ serialName = "COM7"                  # Windows(variacao de)
 
 print("porta COM aberta com sucesso")
 
-def empacotamento(txLen,txBuffer,end, stuffing):
-        #HEAD
-    #tamanhoEmByte = bytes([txLen])        
-    
-    for i in range(txLen): 
-        data = txBuffer[i:]
-        if txBuffer[i] == end[0]:
-            if txBuffer[i+1] == end[1]:
-                if txBuffer[i+2] == end[2]:
-                    if txBuffer[i+3] == end[3]:
-                        if txBuffer[i+4] == end[4]:
-                            zero = bytes([txBuffer[i-1]])
-                            s = bytes([txBuffer[i+5]])
-                            if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
-                                txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
-
-    txLen    = len(txBuffer)
-    print("txLen: ",txLen)
-    tamanhoEmByte = (txLen).to_bytes(2,byteorder='big')
-
-    return txLen, tamanhoEmByte, txBuffer
-
 def main():
     # Inicializa enlace ... variavel com possui todos os metodos e propriedades do enlace, que funciona em threading
     com = enlace(serialName)
@@ -156,38 +134,6 @@ def main():
     txLen    = len(txBuffer)
 
 
-    end = bytes([1,2,3,4,5])
-    stuffing = bytes(1)
-
-    # tamanho = 1000
-
-    tipo = 1
-    txLen, tamanhoEmByte, txBuffer = empacotamento(txLen,txBuffer,end,stuffing)
-    vazios = bytes(5)
-    baudrate = 115200
-    head = vazios + tipoDeMensagem + tamanhoEmByte
-    payload = txBuffer
-    deltaT = (10)*txLen/baudrate
-    
-
-    txBuffer =  head + txBuffer + end
-    overhead = len(payload)/len(txBuffer)
-    throughput = len(payload)/deltaT
-
-
-    # Transmite dado
-    # print("tentado transmitir .... {} bytes".format())
-    # while (tipo != 5) or (tipo != 6):
-    #     if (tipo == 1) or (tipo == 3):
-    #         payload = bytes(0)
-    #         tamanhoEmByte = (len(payload)).to_bytes(2,byteorder='big')
-    #         head = vazio + bytes([tipo]) + tamanhoEmByte
-    #         com.sendData(head)
-    #         time.sleep(5)
-    #         com.getData()
-    #     else:
-
-
     com.sendData(txBuffer)
 
     
@@ -199,13 +145,7 @@ def main():
     com.disable()
    
 
-    print("-------------------------") 
-    print("Throughput:       ", throughput,"bytes/s")
-    print("OverHead:         ", overhead, "%") 
-    print("Head: ",head)
-    print("Stuffing: ",stuffing)
-    print("EOF: ",end)
-    print("-------------------------")
+    
 
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
