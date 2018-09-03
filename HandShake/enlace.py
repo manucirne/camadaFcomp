@@ -56,7 +56,6 @@ class enlace(object):
         tipo = 1
         data = data
         dataR = data
-        tentativas = 0
         resposta = False
         while not resposta:
             if tipo == 1:
@@ -87,6 +86,8 @@ class enlace(object):
                 print("Erro na mensagem - tipo 6")
                 print("Reiniciando")
 
+
+
     def getData(self): #, size):
         """ Get n data over the enlace interface
         Return the byte array and the size of the buffer
@@ -106,9 +107,14 @@ class enlace(object):
         resposta = False
         while not resposta:
             data, tipo = self.rx.getNData()
-            if tipo == 4:
-                self.tx.sendBuffer(data, )
-
+            if tipo == 5:
+                self.tx.sendBuffer(data, 5)
+                print("Mensagem recebida corretamente")
+                resposta = True 
+            if tipo == 6:
+                self.tx.sendBuffer(data, 6)
+                print("Erro na mensagem - tipo 6")
+ 
 
        
         return(data, len(data))
