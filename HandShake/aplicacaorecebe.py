@@ -57,23 +57,9 @@ def main():
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
 
-    end = bytes([1,2,3,4,5])
-    stuffing = bytes(1)
-
-
-    tamanho_esperado = int.from_bytes(rxBuffer[6:8], byteorder="big")
-    EOP_encontrado = False
-
-
-    print("Tamanho Informado no Head:    ", tamanho_esperado)
-
-    EOP_encontrado, rxBuffer, inicioEOP, tamanho_recebido = desempacotamento(rxBuffer,end,stuffing,EOP_encontrado)
-
-
     with open("recebida.png", "wb+") as imageFile:
         imagemrecebida = imageFile.write(rxBuffer[8:inicioEOP])
 
-    erros(tamanho_esperado,tamanho_recebido,EOP_encontrado)
 
     # log
     print ("Lido              {} bytes ".format(nRx)) 

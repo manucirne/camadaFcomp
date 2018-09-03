@@ -54,46 +54,61 @@ class enlace(object):
         """ Send data over the enlace interface
         """
         tipo = 1
+        data = data
+        dataR = data
         tentativas = 0
         resposta = False
-        while tipo < 6:
-
+        while not resposta:
             if tipo == 1:
                 self.tx.sendBuffer(data, 1)
-                data, lenData, tipo = self.getData()
-
+                data, tipobyte = self.rx.getNData()
+                tipo = int.from_bytes(tipobyte, byteorder="big")
+                print("tipo 1")
             if tipo == 2:
-                resposta = True
+                print("tipo 2")
                 self.tx.sendBuffer(data, 3)
-                time.sleep(1)
-                self.tx.sendBuffer(data, 4)
-                data, lenData, tipo = self.getData()
-            if tipo == 5 and  resposta:
-                print("Mensagem enviada corretamente")
-                tipo = 8
-            else:
-                print("Erro no recebimento de tipo")
-                break
-        if tipo == 6:
-            print("Erro na mensagem - tipo 6")
-            print("Reiniciando")
+                resposta = True
+                time.sleep(1)                
+                
 
-        while (tipo == 6) and (tentativas < 6):
-            self.tx.sendBuffer(data, 4)
-            data, lenData, tipo = self.getData()
+        resposta = False
+
+        while not resposta:
+            self.tx.sendBuffer(dataR, 4)
+            data, tipo = self.rx.getNData()
+            tipo = int.from_bytes(tipo, byteorder="big")
             if tipo == 5:
                 print("Mensagem enviada corretamente")
-                tipo = 8
-        if tipo != 8:
-            print("Erro na mensagem- tipo 6 - tentativas esgotadas")
+                print("Tipo 5")
+                tipo = 7
+                resposta = True
+
+            if tipo == 6:
+                print("Erro na mensagem - tipo 6")
+                print("Reiniciando")
 
     def getData(self): #, size):
         """ Get n data over the enlace interface
         Return the byte array and the size of the buffer
         """
         # print('entrou na leitura e tentara ler ' + str(size) )
-
-        data, tipo = self.rx.getNData()
         
+        resposta = False
+
+        while not resposta:
+            data, tipo = self.rx.getNData()
+            tipo = int.from_bytes(tipo, byteorder="big")
+            if tipo == 1:
+                self.tx.sendBuffer(data, 2)
+            if tipo == 3:
+                resposta = True
+
+        resposta = False
+        while not resposta:
+            data, tipo = self.rx.getNData()
+            if tipo == 4:
+                self.tx.sendBuffer(data, )
+
+
        
-        return(data, len(data), tipo)
+        return(data, len(data))

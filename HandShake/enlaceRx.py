@@ -90,14 +90,17 @@ class RX(object):
         self.threadResume()
         return(b)
 
-    def getBuffer(self, nData):
+     def getBuffer(self, nData):
         """ Remove n data from buffer
         """
         self.threadPause()
         b           = self.buffer[0:nData]
         self.buffer = self.buffer[nData:]
+        
+        EOP_encontrado, b, inicioEOP, tamanho_esperado, tamanho_recebido, tipo = b.desempacotamento()
+
         self.threadResume()
-        return(b)
+        return (b, tipo)
 
     def getNData(self):
         """ Read N bytes of data from the reception buffer
@@ -109,19 +112,23 @@ class RX(object):
         
         #if self.getBufferLen() < size:
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
-        time.sleep(5)
-        size = int.from_bytes(self.buffer[6:8], byteorder="big")
+        print("entrou no getNdata")
+        x = self.getBufferLen()
+        time.sleep(1)
+        
+        #if self.getBufferLen() < size:
+            #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
+        while((self.getBufferLen() == 0) or (self.getBufferLen() != x)):
+            time.sleep(1)
+            print("lenbuffer:   ",x)
+            x = self.getBufferLen()
+            time.sleep(1)
+        b, tipo = self.getBuffer(x)
+#      
+        #self.buffer = self.desempacotamento()[1]
+       # tipo = self.desempacotamento()[5]
 
-        print("seixe:        ", size)
-
-        while(self.getBufferLen() < size) or size == 0:
-            time.sleep(0.05)
-            print("sendData!!!!!!!!!!!!")
-#               
-        self.buffer = self.desempacotamento()[1]
-        tipo = self.desempacotamento()[5]
-
-        return(self.buffer, tipo)
+        return(b, tipo)
 
 
     def clearBuffer(self):
@@ -155,7 +162,7 @@ class RX(object):
                         print("Posição de início do EOP:     ",inicioEOP)
                         print("Encontramos o fim!! :)")
                         EOP_encontrado = True
-                        if tamanho_recebido == tamanho_recebido:
+                        if tamanho_esperado == tamanho_recebido:
                             tipo = 5
                         else:
                             tipo = 6
@@ -183,10 +190,3 @@ class RX(object):
             print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
             print("ERRO!! O EOP não foi localizado.")
             print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-
-
-
-
-
-    
-
