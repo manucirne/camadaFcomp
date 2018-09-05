@@ -35,8 +35,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-#serialName = "COM4"                  # Windows(variacao de)
+#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+serialName = "COM7"                  # Windows(variacao de)
 
 
 
@@ -142,18 +142,41 @@ def main():
             ListTxBuffer.append(x)
         txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
-
+    tipo = 1
 
     # tamanho = 1000
   
     #HEAD
     #tamanhoEmByte = bytes([txLen])
+    while tipo != 5:
+        if tipo == 1:
+            txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
+            com.sendData(txBuffer)
+            rxBuffer, nRx = com.getData()
+            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+        if tipo == 2:
+            tipo = 3
+            txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
+            com.sendData(txBuffer)
+            tipo = 4
+            txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
+            com.sendData(txBuffer)
+            rxBuffer, nRx = com.getData()
+            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+        if tipo == 6:
+            print("Erro 6")
+            print("tentando novamente")
+            tipo = 1
 
-    txBuffer = empacotamento(txBuffer, txLen, end, stuffing)
+    print("Envio corretamente enviado")
+    
+
+
+
     
     # Transmite dado
     # print("tentado transmitir .... {} bytes".format())
-    com.sendData(txBuffer)
+    
 
     
     

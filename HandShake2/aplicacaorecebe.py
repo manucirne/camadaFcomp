@@ -23,8 +23,8 @@ import binascii
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
-#serialName = "COM5"                   # Windows(variacao de)
+#serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
+serialName = "COM8"                   # Windows(variacao de)
 
 
 
@@ -58,11 +58,33 @@ def main():
     print("rxBuffer: ", rxBuffer)
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
-
+    tipo = int.from_bytes(rxBuffer[5], byteorder="big")
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
 
-    rxBuffer, inicioEOP = desempacotamento(rxBuffer, end, stuffing)
+    
+    while tipo != 5:
+        if tipo == 1:
+            tipo = 2
+            txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
+            com.sendData(txBuffer)
+            rxBuffer, nRx = com.getData()
+            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+        if tipo == 3:
+            rxBuffer, nRx = com.getData()
+            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+        if tipo == 4:
+            rxBuffer, inicioEOP, tipo = desempacotamento(rxBuffer, end, stuffing)
+        if tipo == 6:
+            print("Erro no recebimento - 6            " , tipo)
+            txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
+            com.sendData(txBuffer)
+
+    print("Mensagem recebida corretamente             ", tipo)
+    txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
+    com.sendData(txBuffer)
+
+
 
     with open("recebida.png", "wb+") as imageFile:
         imagemrecebida = imageFile.write(rxBuffer[8:inicioEOP])

@@ -128,8 +128,10 @@ class RX(object):
 
 def desempacotamento(rxBuffer, end, stuffing):
     tamanho_esperado = int.from_bytes(rxBuffer[6:8], byteorder="big")
+    
     EOP_encontrado = False
     cont_s = 0
+    tipo = 0
 
     for i in range(8, len(rxBuffer)-1): 
 
@@ -151,15 +153,19 @@ def desempacotamento(rxBuffer, end, stuffing):
                 EOP_encontrado = True
 
 
+
+
     if tamanho_esperado != tamanho_recebido and EOP_encontrado:
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
         print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        tipo = 6
 
     if not EOP_encontrado:
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
         print("ERRO!! O EOP não foi localizado.")
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        tipo = 6
 
-    return rxBuffer, inicioEOP
+    return rxBuffer, inicioEOP, tipo
 

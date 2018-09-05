@@ -104,24 +104,29 @@ class TX(object):
         return(self.threadMutex)
 
         
-def empacotamento(txBuffer, txLen, end, stuffing): 
-    for i in range(txLen): 
-        if txBuffer[i] == end[0]:
-            if txBuffer[i+1] == end[1]:
-                if txBuffer[i+2] == end[2]:
-                    if txBuffer[i+3] == end[3]:
-                        if txBuffer[i+4] == end[4]:
-                            zero = bytes([txBuffer[i-1]])
-                            s = bytes([txBuffer[i+5]])
-                            if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
-                                txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
-    data = txBuffer
+def empacotamento(txBuffer, txLen, end, stuffing, tipo): 
+    if (tipo == 1) or (tipo == 2) or (tipo == 3):
+        txBuffer = bytes(1)
+    if (tipo == 4):
+        for i in range(txLen): 
+            if txBuffer[i] == end[0]:
+                if txBuffer[i+1] == end[1]:
+                    if txBuffer[i+2] == end[2]:
+                        if txBuffer[i+3] == end[3]:
+                            if txBuffer[i+4] == end[4]:
+                                zero = bytes([txBuffer[i-1]])
+                                s = bytes([txBuffer[i+5]])
+                                if (bytes([txBuffer[i-1]]) != stuffing) or (bytes([txBuffer[i+5]]) != stuffing):
+                                    txBuffer = txBuffer[:i] + stuffing + end + stuffing + txBuffer[i+5:]
 
     txLen    = len(txBuffer)
     print("txLen: ",txLen)
-    tamanhoEmByte = (txLen).to_bytes(8,byteorder='big')
+    tamanhoEmByte = (txLen).to_bytes(2,byteorder='big')
+    vazio = bytes(5)
+    tipo = (tipo).to_bytes(1,byteorder='big')
+
     
-    head = tamanhoEmByte
+    head = vazio + tipo +tamanhoEmByte
 
     payload = txBuffer
     txBuffer = head + txBuffer + end
@@ -130,6 +135,7 @@ def empacotamento(txBuffer, txLen, end, stuffing):
 
     print("-------------------------")
     print("OverHead:     ", overhead, "%")
+    print("Tipo:              ", tipo)
     #print("Throughput:       ", throughput,"bytes/s") 
     print("Head: ",head)
     print("Stuffing: ",stuffing)
