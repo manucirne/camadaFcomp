@@ -87,7 +87,7 @@ class TX(object):
         in order to save the new value.
         """
 
-        
+        print("entrou no sendBuffer")
         baudrate = 115200
         
         txLen, tamanhoEmByte, payload =  self.empacotamento(data, end, stuffing, tipo)
@@ -104,7 +104,6 @@ class TX(object):
         self.transLen   = 0
         self.buffer = data
         self.threadMutex  = True
-        
 
         print("-------------------------") 
         print("Throughput:       ", throughput,"bytes/s")

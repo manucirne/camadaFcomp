@@ -54,22 +54,22 @@ class enlace(object):
         """ Send data over the enlace interface
         """
         tipo = 1
-        data = data
+        data0 = bytes(1)
+        print("data", data0)
         dataR = data
         resposta = False
         while not resposta:
             if tipo == 1:
-                self.tx.sendBuffer(data, 1)
+                self.tx.sendBuffer(data0, 1)
                 data, tipobyte = self.rx.getNData()
                 tipo = int.from_bytes(tipobyte, byteorder="big")
                 print("tipo 1")
             if tipo == 2:
                 print("tipo 2")
-                self.tx.sendBuffer(data, 3)
+                self.tx.sendBuffer(data0, 3)
                 resposta = True
                 time.sleep(1)                
                 
-
         resposta = False
 
         while not resposta:

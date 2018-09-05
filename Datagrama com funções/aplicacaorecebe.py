@@ -11,13 +11,14 @@
 print("comecou")
 
 from enlace import *
+from enlaceRx import *
 import time
 import binascii
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer a
 # comunicaçao
 # Serial Com Port
-#   para saber a sua porta, execute no terminal :
+#   para saber a sua porta, execute no terminal:
 #   python -m serial.tools.list_ports
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
@@ -28,6 +29,7 @@ serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
 
 
 print("porta COM aberta com sucesso")
+
 
 
 def main():
@@ -56,6 +58,11 @@ def main():
     print("rxBuffer: ", rxBuffer)
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
+
+    end = bytes([1,2,3,4,5])
+    stuffing = bytes(1)
+
+    rxBuffer, inicioEOP = desempacotamento(rxBuffer, end, stuffing)
 
     with open("recebida.png", "wb+") as imageFile:
         imagemrecebida = imageFile.write(rxBuffer[8:inicioEOP])

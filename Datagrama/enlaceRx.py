@@ -13,11 +13,6 @@ import time
 # Threads
 import threading
 
-# Variaveis Protocolo
-end = bytes([1,2,3,4,5])
-stuffing = bytes(1)
-EOP_encontrado = False
-
 # Class
 class RX(object):
     """ This class implements methods to handle the reception
@@ -33,10 +28,9 @@ class RX(object):
         self.threadMutex = True
         self.READLEN     = 1024
 
-
     def thread(self): 
         """ RX thread, to send data in parallel with the code
-            essa é a funcao executada quando o thread é chamado. 
+        essa é a funcao executada quando o thread é chamado. 
         """
         while not self.threadStop:
             if(self.threadMutex == True):
@@ -99,7 +93,7 @@ class RX(object):
         self.threadResume()
         return(b)
 
-    def getNData(self, size):
+    def getNData(self):#, size):
         """ Read N bytes of data from the reception buffer
 
         This function blocks until the number of bytes is received
@@ -109,10 +103,22 @@ class RX(object):
         
         #if self.getBufferLen() < size:
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
-        while(self.getBufferLen() < size):
-            time.sleep(0.05)
-#                 
-        return(self.desempacotamento()[1])
+#         while(self.getBufferLen() < size):
+#             time.sleep(0.05)
+# #                 
+#         return(self.getBuffer(size))
+        x = self.getBufferLen()
+        time.sleep(1)
+        
+        #if self.getBufferLen() < size:
+            #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
+        while((self.getBufferLen() == 0) or (self.getBufferLen() != x)):
+            time.sleep(1)
+            print("lenbuffer:   ",x)
+            x = self.getBufferLen()
+            time.sleep(1)
+
+        return(self.getBuffer(x))
 
 
     def clearBuffer(self):
@@ -120,45 +126,4 @@ class RX(object):
         """
         self.buffer = b""
 
-    def desempacotamento(self):
-        global end, stuffing, EOP_encontrado
-        cont_s = 0
-        tamanho_esperado = int.from_bytes(self.buffer[6:8], byteorder="big")
-        for i in range(8, len(self.buffer)-1): 
-
-            if bytes(self.buffer[i+1:i+6]) == end:
-
-                if  bytes([self.buffer[i-1]]) == stuffing and bytes([self.buffer[i+6]]) == stuffing:
-                    cont_s += 2
-                    zero1 = i
-                    zero2 = i+6
-                    self.buffer = self.buffer[:zero1] + self.buffer[zero1+1:zero2] + self.buffer[zero2+1:]
-
-                else:
-                    tamanho_recebido = i-7+cont_s
-                    print("Tamanho Informado no Head:    ", tamanho_esperado)
-                    print("Tamanho da mensagem recebida: ", tamanho_recebido)
-                    inicioEOP = i
-                    print("Posição de início do EOP:     ",inicioEOP)
-                    print("Encontramos o fim!! :)")
-                    EOP_encontrado = True
-        return EOP_encontrado, self.buffer, inicioEOP, tamanho_esperado, tamanho_recebido
-
-    def erros(tamanho_esperado,tamanho_recebido):
-        global EOP_encontrado
-        if tamanho_esperado != tamanho_recebido:
-            print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-            print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
-            print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-
-        if not EOP_encontrado:
-            print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-            print("ERRO!! O EOP não foi localizado.")
-            print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-
-
-
-
-
-    
 

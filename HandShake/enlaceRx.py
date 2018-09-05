@@ -90,9 +90,10 @@ class RX(object):
         self.threadResume()
         return(b)
 
-     def getBuffer(self, nData):
+    def getBuffer(self, nData):
         """ Remove n data from buffer
         """
+        print("entrou no getBuffer")
         self.threadPause()
         b           = self.buffer[0:nData]
         self.buffer = self.buffer[nData:]
@@ -112,7 +113,7 @@ class RX(object):
         
         #if self.getBufferLen() < size:
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
-        print("entrou no getNdata")
+        
         x = self.getBufferLen()
         time.sleep(1)
         
@@ -123,10 +124,13 @@ class RX(object):
             print("lenbuffer:   ",x)
             x = self.getBufferLen()
             time.sleep(1)
+        print("saiu do while")
         b, tipo = self.getBuffer(x)
 #      
         #self.buffer = self.desempacotamento()[1]
        # tipo = self.desempacotamento()[5]
+
+        print("tipo", tipo)
 
         return(b, tipo)
 
@@ -142,7 +146,10 @@ class RX(object):
         print("self.buffer:      ",   self.buffer)
         tipo = self.buffer[5]
         tamanho_esperado = int.from_bytes(self.buffer[6:8], byteorder="big")
+
+        print("tipo", tipo)
         if tipo == bytes([4]):
+            print("tipo", tipo)
      
             for i in range(8, len(self.buffer)-1): 
 
@@ -174,6 +181,7 @@ class RX(object):
                 tamanho_recebido = 1
                 tipo = 2
 
+        print("tipo", tipo)
         erros(tamanho_esperado,tamanho_recebido,EOP_encontrado)
         return EOP_encontrado, self.buffer, inicioEOP, tamanho_esperado, tamanho_recebido, tipo
             

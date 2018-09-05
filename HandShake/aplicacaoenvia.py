@@ -31,7 +31,7 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+serialName = "/dev/cu.Bluetooth-Incoming-Port" # Mac    (variacao de)
 #serialName = "COM7"                  # Windows(variacao de)
 
 
@@ -132,6 +132,8 @@ def main():
             ListTxBuffer.append(x)
         txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
+
+    print("estamos enviando", txLen)
 
 
     com.sendData(txBuffer)

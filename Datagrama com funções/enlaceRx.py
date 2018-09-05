@@ -107,7 +107,6 @@ class RX(object):
 #             time.sleep(0.05)
 # #                 
 #         return(self.getBuffer(size))
-        print("entrou no getNdata")
         x = self.getBufferLen()
         time.sleep(1)
         
@@ -119,7 +118,6 @@ class RX(object):
             x = self.getBufferLen()
             time.sleep(1)
 
-        print("lenbuffer fora:   ",x)
         return(self.getBuffer(x))
 
 
@@ -128,4 +126,40 @@ class RX(object):
         """
         self.buffer = b""
 
+def desempacotamento(rxBuffer, end, stuffing):
+    tamanho_esperado = int.from_bytes(rxBuffer[6:8], byteorder="big")
+    EOP_encontrado = False
+    cont_s = 0
+
+    for i in range(8, len(rxBuffer)-1): 
+
+        if bytes(rxBuffer[i+1:i+6]) == end:
+
+            if  bytes([rxBuffer[i-1]]) == stuffing and bytes([rxBuffer[i+6]]) == stuffing:
+                cont_s += 2
+                zero1 = i
+                zero2 = i+6
+                rxBuffer = rxBuffer[:zero1] + rxBuffer[zero1+1:zero2] + rxBuffer[zero2+1:]
+
+            else:
+                tamanho_recebido = i-7+cont_s
+                print("Tamanho Informado no Head:    ", tamanho_esperado)
+                print("Tamanho da mensagem recebida: ", tamanho_recebido)
+                inicioEOP = i
+                print("Posição de início do EOP:     ", inicioEOP)
+                print("Encontramos o fim!! :)")
+                EOP_encontrado = True
+
+
+    if tamanho_esperado != tamanho_recebido and EOP_encontrado:
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+
+    if not EOP_encontrado:
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        print("ERRO!! O EOP não foi localizado.")
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+
+    return rxBuffer, inicioEOP
 

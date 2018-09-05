@@ -11,10 +11,12 @@
 print("comecou")
 
 from enlace import *
+from enlaceTx import *
 import time
 from tkinter import *
 from PIL import ImageTk, Image
 import os
+import datetime
 
 
 from tkinter.filedialog import askopenfilename, askopenfile
@@ -22,6 +24,8 @@ from tkinter.messagebox import showerror
 
 
 fname = "null"
+
+
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer a
 # comunicaçao
@@ -31,21 +35,24 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1421" # Mac    (variacao de)
-#serialName = "COM3"                  # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+#serialName = "COM4"                  # Windows(variacao de)
 
 
 
 print("porta COM aberta com sucesso")
 
 
+# Valores protocolo
+end = bytes([1,2,3,4,5])
+stuffing = bytes(1)
+
 
 def main():
     # Inicializa enlace ... variavel com possui todos os metodos e propriedades do enlace, que funciona em threading
     com = enlace(serialName)
 
-    # Ativa comunicacao
-    com.enable()
+    
 
     #verificar que a comunicação foi aberta
     print("comunicação aberta")
@@ -110,26 +117,45 @@ def main():
     Application(root)
     root.mainloop()
 
+    #Ativa comunicacao
+
+    #filename = askopenfilename()
+
+
+    com.enable()
+
+    
 
     # a seguir ha um exemplo de dados sendo carregado para transmissao
     # voce pode criar o seu carregando os dados de uma imagem. Tente descobrir
     #como fazer isso
     print ("gerando dados para transmissao :")
     
-    with open("imagem.png", "rb") as imageFile:
-        imagemenviada = imageFile.read()
-        txBuffer = bytearray(imagemenviada)
-
-    # ListTxBuffer =list()
-    # for x in range(0,100):
-    #     ListTxBuffer.append(x)
-    # txBuffer = bytes(ListTxBuffer)
+    if fname != "null":
+        with open(fname, "rb") as imageFile:
+            imagemenviada = imageFile.read()
+            txBuffer = bytearray(imagemenviada)
+        txBuffer = bytes(txBuffer)
+    else:
+        ListTxBuffer =list()
+        for x in range(0,100):
+            ListTxBuffer.append(x)
+        txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
-    print(txLen)
 
+
+    # tamanho = 1000
+  
+    #HEAD
+    #tamanhoEmByte = bytes([txLen])
+
+    txBuffer = empacotamento(txBuffer, txLen, end, stuffing)
+    
     # Transmite dado
     # print("tentado transmitir .... {} bytes".format())
     com.sendData(txBuffer)
+
+    
     
 
     # Encerra comunicação
@@ -137,6 +163,7 @@ def main():
     print("Comunicação encerrada")
     print("-------------------------")
     com.disable()
+   
 
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
