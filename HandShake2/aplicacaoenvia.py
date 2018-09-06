@@ -12,6 +12,7 @@ print("comecou")
 
 from enlace import *
 from enlaceTx import *
+from enlaceRx import *
 import time
 from tkinter import *
 from PIL import ImageTk, Image
@@ -35,8 +36,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM7"                  # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+#serialName = "COM7"                  # Windows(variacao de)
 
 
 
@@ -142,31 +143,44 @@ def main():
             ListTxBuffer.append(x)
         txBuffer = bytes(ListTxBuffer)
     txLen    = len(txBuffer)
+    
+
     tipo = 1
 
     # tamanho = 1000
-  
+
     #HEAD
     #tamanhoEmByte = bytes([txLen])
-    while tipo != 5:
+    while tipo != 5 and tipo < 7:
         if tipo == 1:
-            txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
-            com.sendData(txBuffer)
+            print("Tipo (1):             ", tipo)
+            txBuffer0 = bytes(1)
+            txBuffer0 = empacotamento(txBuffer0, txLen, end, stuffing, tipo)
+            com.sendData(txBuffer0)
             rxBuffer, nRx = com.getData()
-            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+            tipo = rxBuffer[5]
+            print("rxBuffer:             ", rxBuffer)
+            print("Tipo (2):             ", tipo)
         if tipo == 2:
             tipo = 3
-            txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
-            com.sendData(txBuffer)
+            print("Tipo (3):             ", tipo)
+            txBuffer0 = empacotamento(txBuffer0, txLen, end, stuffing, tipo)
+            com.sendData(txBuffer0)
             tipo = 4
+        if tipo == 4:
+            print("Tipo (4):             ", tipo)
             txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
+            print("txBuffer:             ", txBuffer)
             com.sendData(txBuffer)
             rxBuffer, nRx = com.getData()
-            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+            print("rxBuffer:             ", rxBuffer)
+            tipo = rxBuffer[5]
+            print("Tipo (6):             ", tipo)
         if tipo == 6:
             print("Erro 6")
             print("tentando novamente")
             tipo = 1
+            print("Tipo (1):             ", tipo)
 
     print("Envio corretamente enviado")
     

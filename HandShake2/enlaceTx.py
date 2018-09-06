@@ -123,10 +123,10 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo):
     print("txLen: ",txLen)
     tamanhoEmByte = (txLen).to_bytes(2,byteorder='big')
     vazio = bytes(5)
-    tipo = (tipo).to_bytes(1,byteorder='big')
+    tipo = bytes([tipo])
 
     
-    head = vazio + tipo +tamanhoEmByte
+    head = vazio + tipo + tamanhoEmByte
 
     payload = txBuffer
     txBuffer = head + txBuffer + end

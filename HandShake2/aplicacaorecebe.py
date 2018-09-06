@@ -12,6 +12,7 @@ print("comecou")
 
 from enlace import *
 from enlaceRx import *
+from enlaceTx import *
 import time
 import binascii
 
@@ -23,8 +24,8 @@ import binascii
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
-serialName = "COM8"                   # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
+#serialName = "COM8"                   # Windows(variacao de)
 
 
 
@@ -58,40 +59,53 @@ def main():
     print("rxBuffer: ", rxBuffer)
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
-    tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+
+    tipo = rxBuffer[5]
+
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
-
+    print("Tipo:             ", tipo)
     
-    while tipo != 5:
+    while tipo != 5 and tipo < 7:
+        print("entrou no while")
         if tipo == 1:
             tipo = 2
-            txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
-            com.sendData(txBuffer)
+            print("Tipo (2):             ", tipo)
+            txBuffer0 = empacotamento(bytes(1), 1, end, stuffing, tipo)
+            com.sendData(txBuffer0)
             rxBuffer, nRx = com.getData()
-            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+            tipo = rxBuffer[5]
+            print("Tipo (3):             ", tipo)
         if tipo == 3:
             rxBuffer, nRx = com.getData()
-            tipo = int.from_bytes(rxBuffer[5], byteorder="big")
+            tipo = rxBuffer[5]
+            print("Tipo (4):             ", tipo)
         if tipo == 4:
+            print("Tipo (4):             ", tipo)
             rxBuffer, inicioEOP, tipo = desempacotamento(rxBuffer, end, stuffing)
+            with open("recebida.png", "wb+") as imageFile:
+                imagemrecebida = imageFile.write(rxBuffer[8:inicioEOP])
+                print("rxBuffer.     ", rxBuffer)
+            print("Tipo (6 ou 7):             ", tipo)
+            if tipo == 5:
+                tipo = 7
         if tipo == 6:
             print("Erro no recebimento - 6            " , tipo)
+            tipo = 1
             txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
             com.sendData(txBuffer)
+        print("Tipo:             ", tipo, "###############")
 
+
+    
+    
     print("Mensagem recebida corretamente             ", tipo)
     txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
     com.sendData(txBuffer)
 
 
-
-    with open("recebida.png", "wb+") as imageFile:
-        imagemrecebida = imageFile.write(rxBuffer[8:inicioEOP])
-
-
     # log
-    print ("Lido              {} bytes ".format(nRx)) 
+    print ("Lido              {} bytes ".format(len(rxBuffer[8:inicioEOP]))) 
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
     print ("rxBuffer apos retirada: ", rxBuffer)
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")

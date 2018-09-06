@@ -36,7 +36,10 @@ class RX(object):
             if(self.threadMutex == True):
                 rxTemp, nRx = self.fisica.read(self.READLEN)
                 if (nRx > 0):
-                    self.buffer += rxTemp
+                    if nRx < int.from_bytes(self.buffer[6:8], byteorder="big"):
+                        self.buffer += rxTemp
+                    else:
+                        self.buffer = rxTemp
                 time.sleep(0.01)
 
     def threadStart(self):
@@ -114,6 +117,7 @@ class RX(object):
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
         while((self.getBufferLen() == 0) or (self.getBufferLen() != x)):
             time.sleep(1)
+            print("Buffer:         ", self.buffer)
             print("lenbuffer:   ",x)
             x = self.getBufferLen()
             time.sleep(1)
@@ -128,11 +132,11 @@ class RX(object):
 
 def desempacotamento(rxBuffer, end, stuffing):
     tamanho_esperado = int.from_bytes(rxBuffer[6:8], byteorder="big")
-    
+    print("rxBuffer:    ", rxBuffer)
     EOP_encontrado = False
     cont_s = 0
-    tipo = 0
-
+    tipo = 1
+    head = rxBuffer[:8]
     for i in range(8, len(rxBuffer)-1): 
 
         if bytes(rxBuffer[i+1:i+6]) == end:
@@ -151,15 +155,11 @@ def desempacotamento(rxBuffer, end, stuffing):
                 print("Posição de início do EOP:     ", inicioEOP)
                 print("Encontramos o fim!! :)")
                 EOP_encontrado = True
+                rxBuffer = rxBuffer[:i+5]
+                #if tamanho_esperado > 1:
+                tipo = 5
 
 
-
-
-    if tamanho_esperado != tamanho_recebido and EOP_encontrado:
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-        print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
-        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
-        tipo = 6
 
     if not EOP_encontrado:
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
@@ -167,5 +167,20 @@ def desempacotamento(rxBuffer, end, stuffing):
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
         tipo = 6
 
+    elif tamanho_esperado != tamanho_recebido:
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        print("ERRO!! Número de bytes no payload não corresponde ao informado no head.")
+        print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        tipo = 6
+
+    else:
+        tipo = 5
+
+    # tamanhoEmByte = (txLen).to_bytes(2,byteorder='big')
+    # vazio = bytes(5)
+    # tipo = bytes([tipo])
+    # head = vazio + tipo + tamanhoEmByte
+
+    # rxBuffer = head + rxBuffer[8:]
     return rxBuffer, inicioEOP, tipo
 
