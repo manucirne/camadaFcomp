@@ -52,15 +52,18 @@ def main():
     print ("Recebendo dados .... ")
     bytesSeremLidos=com.rx.getBufferLen()
   
-        
-    rxBuffer, nRx = com.getData()
+    tipo = 0
+
+    while tipo == 0:   
+        rxBuffer, nRx = com.getData()
+        if len(rxBuffer) > 0:
+            tipo = rxBuffer[5]
 
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
     print("rxBuffer: ", rxBuffer)
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
 
-    tipo = rxBuffer[5]
 
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
@@ -72,13 +75,15 @@ def main():
             tipo = 2
             print("Tipo (2):             ", tipo)
             txBuffer0 = empacotamento(bytes(1), 1, end, stuffing, tipo)
-            com.sendData(txBuffer0)
-            rxBuffer, nRx = com.getData()
-            tipo = rxBuffer[5]
+            while tipo != 3:
+                com.sendData(txBuffer0)
+                rxBuffer, nRx = com.getData()
+                tipo = rxBuffer[5]
             print("Tipo (3):             ", tipo)
         if tipo == 3:
-            rxBuffer, nRx = com.getData()
-            tipo = rxBuffer[5]
+            while tipo != 4:
+                rxBuffer, nRx = com.getData()
+                tipo = rxBuffer[5]
             print("Tipo (4):             ", tipo)
         if tipo == 4:
             print("Tipo (4):             ", tipo)
@@ -91,7 +96,7 @@ def main():
                 tipo = 7
         if tipo == 6:
             print("Erro no recebimento - 6            " , tipo)
-            tipo = 1
+            tipo = 4
             txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
             com.sendData(txBuffer)
         print("Tipo:             ", tipo, "###############")
@@ -105,7 +110,7 @@ def main():
 
 
     # log
-    print ("Lido              {} bytes ".format(len(rxBuffer[8:inicioEOP]))) 
+    print ("Lido              {} bytes ".format(rxBuffer[8:inicioEOP])) 
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
     print ("rxBuffer apos retirada: ", rxBuffer)
     print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")

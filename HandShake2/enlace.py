@@ -50,11 +50,12 @@ class enlace(object):
     ################################
     # Application  interface       #
     ################################
+
     def sendData(self, data):
         """ Send data over the enlace interface
         """
         time.sleep(1)
-        print("enviou")
+        print("enviou", data) 
         self.tx.sendBuffer(data)
 
     def getData(self): #, size):
@@ -63,7 +64,7 @@ class enlace(object):
         """
         # print('entrou na leitura e tentara ler ' + str(size) )
         time.sleep(1)
-        print("recebeu")
         data = self.rx.getNData()
+        print("recebeu", data) 
        
         return(data, len(data))

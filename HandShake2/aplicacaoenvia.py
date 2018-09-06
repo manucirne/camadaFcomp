@@ -151,14 +151,17 @@ def main():
 
     #HEAD
     #tamanhoEmByte = bytes([txLen])
-    while tipo != 5 and tipo < 7:
+    while tipo != 5 and tipo != 7:
         if tipo == 1:
             print("Tipo (1):             ", tipo)
             txBuffer0 = bytes(1)
             txBuffer0 = empacotamento(txBuffer0, txLen, end, stuffing, tipo)
-            com.sendData(txBuffer0)
-            rxBuffer, nRx = com.getData()
-            tipo = rxBuffer[5]
+            print("txBuffer0:             ", txBuffer0)
+            while tipo != 2:
+                com.sendData(txBuffer0)
+                rxBuffer, nRx = com.getData()
+                if len(rxBuffer) > 0:
+                    tipo = rxBuffer[5]
             print("rxBuffer:             ", rxBuffer)
             print("Tipo (2):             ", tipo)
         if tipo == 2:
@@ -171,6 +174,7 @@ def main():
             print("Tipo (4):             ", tipo)
             txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
             print("txBuffer:             ", txBuffer)
+            time.sleep(1)
             com.sendData(txBuffer)
             rxBuffer, nRx = com.getData()
             print("rxBuffer:             ", rxBuffer)

@@ -36,10 +36,11 @@ class RX(object):
             if(self.threadMutex == True):
                 rxTemp, nRx = self.fisica.read(self.READLEN)
                 if (nRx > 0):
-                    if nRx < int.from_bytes(self.buffer[6:8], byteorder="big"):
-                        self.buffer += rxTemp
-                    else:
-                        self.buffer = rxTemp
+                    self.buffer += rxTemp
+                    # if nRx < int.from_bytes(self.buffer[6:8], byteorder="big"):
+                    #     self.buffer += rxTemp
+                    # else:
+                    #     self.buffer = rxTemp
                 time.sleep(0.01)
 
     def threadStart(self):
@@ -113,9 +114,15 @@ class RX(object):
         x = self.getBufferLen()
         time.sleep(1)
         
+
+        tInicial = time.time()
+        tFinal = time.time()
+
         #if self.getBufferLen() < size:
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
-        while((self.getBufferLen() == 0) or (self.getBufferLen() != x)):
+        while(((self.getBufferLen() == 0) or (self.getBufferLen() != x)) and tFinal - tInicial < 5 ):
+            print("Buffer:         ", self.buffer)
+            tFinal = time.time()
             time.sleep(1)
             print("Buffer:         ", self.buffer)
             print("lenbuffer:   ",x)
