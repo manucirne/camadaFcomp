@@ -64,7 +64,7 @@ class enlace(object):
         """
         # print('entrou na leitura e tentara ler ' + str(size) )
         time.sleep(1)
-        data = self.rx.getNData()
+        data, erro = self.rx.getNData()
         print("recebeu", data) 
        
-        return(data, len(data))
+        return(data, len(data), erro)

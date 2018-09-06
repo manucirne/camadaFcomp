@@ -118,6 +118,7 @@ class RX(object):
         tInicial = time.time()
         tFinal = time.time()
 
+        erro = False
         #if self.getBufferLen() < size:
             #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
         while(((self.getBufferLen() == 0) or (self.getBufferLen() != x)) and tFinal - tInicial < 5 ):
@@ -129,7 +130,11 @@ class RX(object):
             x = self.getBufferLen()
             time.sleep(1)
 
-        return(self.getBuffer(x))
+        if tFinal - tInicial >= 5 :
+            print("Erro de tempo excedido")
+            erro = True
+        x = self.getBufferLen()
+        return(self.getBuffer(x), erro)
 
 
     def clearBuffer(self):
@@ -144,14 +149,15 @@ def desempacotamento(rxBuffer, end, stuffing):
     cont_s = 0
     tipo = 1
     head = rxBuffer[:8]
-    for i in range(8, len(rxBuffer)-1): 
+    inicioEOP = 0
+    for i in range(8, len(rxBuffer)): 
 
         if bytes(rxBuffer[i+1:i+6]) == end:
 
             if  bytes([rxBuffer[i-1]]) == stuffing and bytes([rxBuffer[i+6]]) == stuffing:
                 cont_s += 2
                 zero1 = i
-                zero2 = i+6
+                zero2 = i+7
                 rxBuffer = rxBuffer[:zero1] + rxBuffer[zero1+1:zero2] + rxBuffer[zero2+1:]
 
             else:
@@ -189,5 +195,6 @@ def desempacotamento(rxBuffer, end, stuffing):
     # head = vazio + tipo + tamanhoEmByte
 
     # rxBuffer = head + rxBuffer[8:]
+
     return rxBuffer, inicioEOP, tipo
 

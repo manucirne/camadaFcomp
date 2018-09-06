@@ -159,9 +159,11 @@ def main():
             print("txBuffer0:             ", txBuffer0)
             while tipo != 2:
                 com.sendData(txBuffer0)
-                rxBuffer, nRx = com.getData()
+                rxBuffer, nRx, erro = com.getData()
                 if len(rxBuffer) > 0:
                     tipo = rxBuffer[5]
+                if erro:
+                    tipo = 1
             print("rxBuffer:             ", rxBuffer)
             print("Tipo (2):             ", tipo)
         if tipo == 2:
@@ -170,20 +172,24 @@ def main():
             txBuffer0 = empacotamento(txBuffer0, txLen, end, stuffing, tipo)
             com.sendData(txBuffer0)
             tipo = 4
+            txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
         if tipo == 4:
             print("Tipo (4):             ", tipo)
-            txBuffer = empacotamento(txBuffer, txLen, end, stuffing, tipo)
             print("txBuffer:             ", txBuffer)
             time.sleep(1)
             com.sendData(txBuffer)
-            rxBuffer, nRx = com.getData()
+            time.sleep(2)
+            rxBuffer, nRx, erro = com.getData()
             print("rxBuffer:             ", rxBuffer)
-            tipo = rxBuffer[5]
+            if len(rxBuffer) > 0:
+                tipo = rxBuffer[5]
             print("Tipo (6):             ", tipo)
+            if erro:
+                tipo = 6
         if tipo == 6:
             print("Erro 6")
             print("tentando novamente")
-            tipo = 1
+            tipo = 4
             print("Tipo (1):             ", tipo)
 
     print("Envio corretamente enviado")

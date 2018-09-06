@@ -55,7 +55,7 @@ def main():
     tipo = 0
 
     while tipo == 0:   
-        rxBuffer, nRx = com.getData()
+        rxBuffer, nRx, erro = com.getData()
         if len(rxBuffer) > 0:
             tipo = rxBuffer[5]
 
@@ -77,17 +77,24 @@ def main():
             txBuffer0 = empacotamento(bytes(1), 1, end, stuffing, tipo)
             while tipo != 3:
                 com.sendData(txBuffer0)
-                rxBuffer, nRx = com.getData()
-                tipo = rxBuffer[5]
+                rxBuffer, nRx, erro = com.getData()
+                if len(rxBuffer) > 0:
+                    tipo = rxBuffer[5]
+                if erro:
+                    tipo = 1
+                
             print("Tipo (3):             ", tipo)
         if tipo == 3:
             while tipo != 4:
-                rxBuffer, nRx = com.getData()
-                tipo = rxBuffer[5]
+                rxBuffer, nRx, erro = com.getData()
+                if len(rxBuffer) > 0:
+                    tipo = rxBuffer[5]
+                
             print("Tipo (4):             ", tipo)
         if tipo == 4:
             print("Tipo (4):             ", tipo)
             rxBuffer, inicioEOP, tipo = desempacotamento(rxBuffer, end, stuffing)
+            print("lenBuffer", len(rxBuffer))
             with open("recebida.png", "wb+") as imageFile:
                 imagemrecebida = imageFile.write(rxBuffer[8:inicioEOP])
                 print("rxBuffer.     ", rxBuffer)
@@ -96,14 +103,14 @@ def main():
                 tipo = 7
         if tipo == 6:
             print("Erro no recebimento - 6            " , tipo)
-            tipo = 4
             txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
+            tipo = 4
             com.sendData(txBuffer)
         print("Tipo:             ", tipo, "###############")
 
 
     
-    
+    tipo = 7
     print("Mensagem recebida corretamente             ", tipo)
     txBuffer = empacotamento(bytes(1), 1, end, stuffing, tipo)
     com.sendData(txBuffer)
