@@ -36,8 +36,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM13"                  # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
+#serialName = "COM13"                  # Windows(variacao de)
 
 
 
@@ -186,7 +186,7 @@ def main():
             #print("rxBuffer:             ", rxBuffer)
             if len(rxBuffer) > 0:
                 tipo = rxBuffer[5]
-                countP = rxBuffer[4]
+                countP = rxBuffer[3]
             #print("Tipo (6):             ", tipo)
             if erro:
                 tipo = 6
