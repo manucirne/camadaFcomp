@@ -61,21 +61,18 @@ def main():
         if len(rxBuffer) > 0:
             tipo = rxBuffer[5]
 
-    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-    print("rxBuffer: ", rxBuffer)
-    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    # print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    # print("rxBuffer: ", rxBuffer)
+    # print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
 
 
     end = bytes([1,2,3,4,5])
     stuffing = bytes(1)
-    print("Tipo:             ", tipo)
     
     while tipo != 7:
-        print("entrou no while")
         if tipo == 1:
             tipo = 2
-            print("Tipo (2):             ", tipo)
             txBuffer0, npacote = empacotamento(bytes(1), 1, end, stuffing, tipo,1)
             while tipo != 3:
                 com.sendData(txBuffer0)
@@ -85,7 +82,6 @@ def main():
                 if erro:
                     tipo = 1
                 
-            print("Tipo (3):             ", tipo)
         if tipo == 3:
             while tipo != 4:
                 rxBuffer, nRx, erro = com.getData()
@@ -95,7 +91,7 @@ def main():
             #print("Tipo (4):             ", tipo)
         if tipo == 4:
             #print("Tipo (4):             ", tipo)
-            print("Pacote esperado:       ", npacoteesperado)
+            #print("Pacote esperado:       ", npacoteesperado)
             rxBufferD, inicioEOP, tipo, npacote, pacoteatual = desempacotamento(rxBuffer, end, stuffing, npacoteesperado)
             
             #print("lenBuffer", len(rxBuffer))
@@ -111,22 +107,19 @@ def main():
                     if pacoteatual == npacote:
                         with open("recebida.png", "wb+") as imageFile:
                             imagemrecebida = imageFile.write(rxBufferDF)
-                            print("rxBuffer.     ", rxBufferDF)
-                        print("Len final colado:      ", len(rxBufferDF))
+                        print("Tamanho total:      ", len(rxBufferDF))
                         tipo = 7   
                                      
         if tipo == 6:
             print("Erro no recebimento - 6            " , tipo)
-            txBuffer, npacote = empacotamento(bytes(1), 1, end, stuffing, tipo, 1)
+            txBuffer, npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo, 1)
             tipo = 3
             com.sendData(txBuffer)
         if tipo == 8:
             print("Erro no recebimento do pacote - 8            " , tipo)
-            txBuffer, npacote = empacotamento(bytes(1), 1, end, stuffing, tipo, npacoteesperado)
+            txBuffer, npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo, npacoteesperado)
             tipo = 3
             com.sendData(txBuffer)
-
-    print("SAIU DO LOOP          ", tipo, "###############")
 
     
     

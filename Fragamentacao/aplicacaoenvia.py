@@ -153,7 +153,7 @@ def main():
     #tamanhoEmByte = bytes([txLen])
     while tipo != 7:
         if tipo == 1:
-            print("Tipo (1):             ", tipo)
+            #print("Tipo (1):             ", tipo)
             txBuffer0 = bytes(1)
             txBuffer0, npacote = empacotamento(txBuffer0, txLen, end, stuffing, tipo, 1)
             #print("txBuffer0:             ", txBuffer0)
@@ -165,7 +165,7 @@ def main():
                 if erro:
                     tipo = 1
             #print("rxBuffer:             ", rxBuffer)
-            print("Tipo (2):             ", tipo)
+            #print("Tipo (2):             ", tipo)
         if tipo == 2:
             tipo = 3
             #print("Tipo (3):             ", tipo)
@@ -196,16 +196,22 @@ def main():
             elif tipo == 5 and countP == npacote:
                 tipo = 7
         if tipo == 6:
+            print("*************************************************************")
             print("Erro 6")
             print("tentando novamente")
-            tipo = 4
+            print("*************************************************************")
+            tipo = 3
         elif tipo == 8:
+            print("*************************************************************")
             print("Erro 8")
             print("tentando novamente")
-            tipo = 4
+            print("*************************************************************")
+            tipo = 3
             #print("Tipo (1):             ", tipo)
 
-    print("Envio corretamente enviado")
+    print("-------------------------")
+    print("Enviado corretamente")
+    print("-------------------------")
     
 
 

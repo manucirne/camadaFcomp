@@ -125,18 +125,18 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual):
     if (txLen%128) != 0:
         npacote += 1
 
-    print("Npacote:         " , npacote)
+    #print("Npacote:         " , npacote)
     Pinicio = (pacoteatual-1)*128
     Pfinal = Pinicio+128
     if npacote != pacoteatual:
         pacote = txBuffer[Pinicio:Pfinal]
-        print("Pacote                  ", pacote)
+        #print("Pacote                  ", pacote)
     else:
         pacote = txBuffer[Pinicio:]
 
 
-    print("txLen: ",txLen)
-    print("tamanho pacote atual: ",len(pacote))
+    #print("txLen: ",txLen)
+    #print("tamanho pacote atual: ",len(pacote))
     tamanhoEmByte = (len(pacote)).to_bytes(2,byteorder='big')
     pacoteatualBytes =(pacoteatual).to_bytes(1,byteorder='big')
     npacoteBytes =(npacote).to_bytes(1,byteorder='big')
@@ -145,11 +145,11 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual):
 
     
     head = vazio + pacoteatualBytes + npacoteBytes  + tipo + tamanhoEmByte
-    print("HEAD:        ", head)
+    #print("HEAD:        ", head)
 
     payload = pacote
     txBuffer = head + payload + end
-    print("TXBUFFER NO EMPACOTAMENTO:    ", txBuffer)
+    #print("TXBUFFER NO EMPACOTAMENTO:    ", txBuffer)
     overhead = len(payload)/len(txBuffer)
     #throughput = payload/deltaT
 
@@ -160,6 +160,8 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual):
     print("Head: ",head)
     print("Stuffing: ",stuffing)
     print("EOF: ",end)
+    print("Número de pacotes:         " , npacote)
+    print("Pacote atual:         " , pacoteatual)
     print("-------------------------")
 
     return txBuffer, npacote

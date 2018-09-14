@@ -143,14 +143,15 @@ class RX(object):
         self.buffer = b""
 
 def desempacotamento(rxBuffer, end, stuffing, npacoteesperado):
-    print("ENTROU NO DESEMPACOTAMENTO###########################")
     tamanho_esperado = int.from_bytes(rxBuffer[6:8], byteorder="big")
     #print("rxBuffer:    ", rxBuffer)
     EOP_encontrado = False
     npacote = rxBuffer[4]
-    print("Npacote:           ", npacote)
+    print("-----------------------------------------------")
+    print("Número de pacotes:           ", npacote)
     pacoteatual = rxBuffer[3]
-    print("pacote atual:          ", pacoteatual)
+    print("Pacote atual:          ", pacoteatual)
+    print("-----------------------------------------------")
     cont_s = 0
     tipo = 1
     head = rxBuffer[:8]
