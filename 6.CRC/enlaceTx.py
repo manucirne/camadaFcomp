@@ -9,9 +9,11 @@
 
 # Importa pacote de tempo
 import time
+import numpy as np
 
 # Threads
 import threading
+from PyCRC.CRC16 import CRC16
 
 
 # Class
@@ -104,25 +106,38 @@ class TX(object):
         return(self.threadMutex)
 
 
-def CRCenvia(payload):
-    divisor = bin(int("49157", 10))[2:]
-    zeros = bytes(len(divisor)-1)
-    zerosDiv = bin(int("00000", 10))[2:]
-    payload = payload + zeros
-    payload = int.from_bytes(payload, byteorder='big', signed=False)
-    payload = bin(payload)[2:]
+# def CRCenvia(payload):
+#     divisor = bin(int("49157", 10))[2:]
+#     zeros = bytes(len(divisor)-1)
+#     zerosDiv = bin(int("00000", 10))[2:]
+#     payload = payload + zeros
+#     payload = int.from_bytes(payload, byteorder='big', signed=False)
+#     payload = bin(payload)[2:]
+#     print("Payload:       ", type(payload))
+#     print("Zerodiv:       ", type(zerosDiv))
+#     print("payload para div:          ", int(payload[0:len(divisor[1:])+1], 2))
     
 
-    while len(payload) > len(divisor):
-        if payload[0] == 1:
-            payload = (divisor ^ payload[0:len(divisor)+1]) + payload[len(divisor)+1:]
-        else:
-            payload = (zerosDiv ^ payload[0:len(divisor)+1]) + payload[len(divisor)+1:]
-        payload = payload[1:]
-    return payload
+#     while len(payload) > len(divisor):
+#         if payload[0] == 1 or payload[0] == "1":
+#             payload = bin(int(divisor[1:], 2) ^ int(payload[0:len(divisor[1:])+1], 2)) + payload[len(divisor)+1:]
+#         else:
+#             payload = bin(int(zerosDiv[1:], 2) ^ int(payload[0:len(divisor[1:])+1],2)) + payload[len(divisor)+1:]
+#         payload = payload[1:]
+#     return payload
 
+
+def CRCenvia(data: bytes):
+    '''
+    CRC-16-ModBus Algorithm
+    '''
+    resto = CRC16().calculate(data)
+    print("Resto no CRC:       ", resto)
+
+    return resto
         
 def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual): 
+    
     if (tipo == 1) or (tipo == 2) or (tipo == 3):
         pacote = bytes(1)
     if (tipo == 4):
@@ -142,6 +157,7 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual):
     npacote = txLen//128
     if (txLen%128) != 0:
         npacote += 1
+        
 
     #print("Npacote:         " , npacote)
     Pinicio = (pacoteatual-1)*128
@@ -151,7 +167,7 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual):
         #print("Pacote                  ", pacote)
     else:
         pacote = txBuffer[Pinicio:]
-
+    print("pacote:      ", pacote)
     resto = CRCenvia(pacote)
     #print("txLen: ",txLen)
     #print("tamanho pacote atual: ",len(pacote))

@@ -35,8 +35,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem28" # Mac    (variacao de)
-#serialName = "COM13"                  # Windows(variacao de)
+#serialName = "/dev/tty.usbmodem28" # Mac    (variacao de)
+serialName = "COM15"                  # Windows(variacao de)
 
 
 
@@ -159,7 +159,7 @@ def main():
             while tipo != 2:
                 com.sendData(txBuffer0)
                 rxBuffer, nRx, erro = com.getData()
-                if len(rxBuffer) > 0:
+                if len(rxBuffer) > 5:
                     tipo = rxBuffer[5]
                 if erro:
                     tipo = 1
@@ -183,7 +183,7 @@ def main():
             #time.sleep(2)
             rxBuffer, nRx, erro = com.getData()
             #print("rxBuffer:             ", rxBuffer)
-            if len(rxBuffer) > 0:
+            if len(rxBuffer) > 5:
                 tipo = rxBuffer[5]
                 countP = rxBuffer[3]
             #print("Tipo (6):             ", tipo)
@@ -203,6 +203,13 @@ def main():
         elif tipo == 8:
             print("*************************************************************")
             print("Erro 8")
+            print("tentando novamente")
+            print("*************************************************************")
+            tipo = 3
+
+        elif tipo == 9:
+            print("*************************************************************")
+            print("Erro 9")
             print("tentando novamente")
             print("*************************************************************")
             tipo = 3

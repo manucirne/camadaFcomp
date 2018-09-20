@@ -9,10 +9,10 @@
 
 # Importa pacote de tempo
 import time
-
+import numpy as np
 # Threads
 import threading
-
+from PyCRC.CRC16 import CRC16
 
 
 # Class
@@ -145,16 +145,15 @@ class RX(object):
         self.buffer = b""
 
 
-def CRCrecebe(payload, resto):
-    payload = payload + resto
-    payload = bin(int(payload[2:], 16))[2:]
-    divisor = bin(int("49157", 10))[2:]
 
-    while len(payload) > len(divisor):
-        xor = payload[0] * divisor
-        payload = (xor ^ payloaa[0:len(divisor)+1]) + payload[len(divisor)+1:]
-        payload = payload[1:]
-    return payload
+def CRCrecebe(data: bytes):
+    '''
+    CRC-16-ModBus Algorithm
+    '''
+    resto = CRC16().calculate(data)
+    print("Resto no CRC:       ", resto)
+
+    return resto
 
 def desempacotamento(rxBuffer, end, stuffing, npacoteesperado):
     tamanho_esperado = int.from_bytes(rxBuffer[6:8], byteorder="big")
@@ -170,6 +169,7 @@ def desempacotamento(rxBuffer, end, stuffing, npacoteesperado):
     tipo = 1
     head = rxBuffer[:8]
     inicioEOP = 0
+    rxBufferCRC = rxBuffer[8:-5]
 
 
     for i in range(8, len(rxBuffer)): 
@@ -190,21 +190,26 @@ def desempacotamento(rxBuffer, end, stuffing, npacoteesperado):
                 print("Posição de início do EOP:     ", inicioEOP)
                 print("Encontramos o fim!! :)")
                 EOP_encontrado = True
-                rxBuffer = rxBuffer[:i+5]
+                rxBuffer = rxBuffer[8:i+1]
                 #if tamanho_esperado > 1:
                 tipo = 5
-
+    print("head:    ", head)
     resto = head[1:3]
-    resto = bin(int(resto, 16))[2:]
-    print("resto: -------------------  ", resto)
-    zero = bin(0)[2:]
-    if CRCrecebe(rxBuffer, resto) != zero:          ############# RxBuffer???????????
+    print("resto1:    ", resto)
+    resto = int.from_bytes(resto, byteorder="big")
+    print("resto int from bytes: -------------------  ", resto)
+    print("Resto do CRC:     ", CRCrecebe(rxBufferCRC))
+    print("RxBuffer:   ", rxBufferCRC)
+
+
+    if resto != CRCrecebe(rxBufferCRC):          ############# RxBuffer???????????
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
         print("ERRO!! Algum bit veio errado. CRC")
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
+        tipo = 9
 
 
-    if npacoteesperado != pacoteatual:
+    elif npacoteesperado != pacoteatual:
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")
         print("ERRO!! Pacote esperado diferente de pacote recebido.")
         print("#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#")

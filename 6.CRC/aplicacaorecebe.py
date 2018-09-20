@@ -24,8 +24,8 @@ import binascii
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
-#serialName = "COM14"                   # Windows(variacao de)
+#serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
+serialName = "COM7"                   # Windows(variacao de)
 
 
 
@@ -117,6 +117,11 @@ def main():
             com.sendData(txBuffer)
         if tipo == 8:
             print("Erro no recebimento do pacote - 8            " , tipo)
+            txBuffer, npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo, npacoteesperado)
+            tipo = 3
+            com.sendData(txBuffer)
+        if tipo == 9:
+            print("Erro de CRC            " , tipo)
             txBuffer, npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo, npacoteesperado)
             tipo = 3
             com.sendData(txBuffer)
