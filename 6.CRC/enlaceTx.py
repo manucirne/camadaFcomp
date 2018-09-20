@@ -132,7 +132,7 @@ def CRCenvia(data: bytes):
     CRC-16-ModBus Algorithm
     '''
     resto = CRC16().calculate(data)
-    print("Resto no CRC:       ", resto)
+    print("Resto no CRC (calculado):       ", resto)
 
     return resto
         

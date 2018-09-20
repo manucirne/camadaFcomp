@@ -24,8 +24,8 @@ import binascii
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
-serialName = "COM7"                   # Windows(variacao de)
+serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
+#serialName = "COM7"                   # Windows(variacao de)
 
 
 
@@ -85,7 +85,7 @@ def main():
         if tipo == 3:
             while tipo != 4:
                 rxBuffer, nRx, erro = com.getData()
-                if len(rxBuffer) > 0:
+                if len(rxBuffer) > 5:
                     tipo = rxBuffer[5]
                 
             #print("Tipo (4):             ", tipo)
@@ -103,12 +103,13 @@ def main():
                 if (pacoteatual <= npacote):
                     tipo = 3
                     npacoteesperado += 1
-                    rxBufferDF += rxBufferD[8:inicioEOP+1]
-                    if pacoteatual == npacote:
-                        with open("recebida.png", "wb+") as imageFile:
-                            imagemrecebida = imageFile.write(rxBufferDF)
-                        print("Tamanho total:      ", len(rxBufferDF))
-                        tipo = 7   
+                    rxBufferDF += rxBuffer[8:inicioEOP+1]
+                    print("rxBufferD:::::::::::::::::", rxBufferDF)
+                if pacoteatual == npacote:
+                    with open("recebida.png", "wb+") as imageFile:
+                        imagemrecebida = imageFile.write(rxBufferDF)
+                    print("Tamanho total:      ", len(rxBuffer))
+                    tipo = 7   
                                      
         if tipo == 6:
             print("Erro no recebimento - 6            " , tipo)
@@ -131,6 +132,8 @@ def main():
     print("Mensagem recebida corretamente             ", tipo)
     txBuffer,npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo,1)
     com.sendData(txBuffer)
+
+    
 
 
     # log
