@@ -15,6 +15,7 @@ from enlaceRx import *
 from enlaceTx import *
 import time
 import binascii
+import sys
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer a
 # comunicaçao
@@ -31,7 +32,15 @@ serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
 
 print("porta COM aberta com sucesso")
 
+def progress(count, total, status=''):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
 
+    percents = round(100.0 * count / float(total), 1)
+    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.flush() 
 
 def main():
     # Inicializa enlace ... variavel com possui todos os metodos e propriedades do enlace, que funciona em threading
@@ -126,6 +135,7 @@ def main():
             txBuffer, npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo, npacoteesperado)
             tipo = 3
             com.sendData(txBuffer)
+        print(progress(pacoteatual, npacote))
 
     
     

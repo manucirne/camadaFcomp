@@ -18,6 +18,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 import os
 import datetime
+import sys
 
 
 from tkinter.filedialog import askopenfilename, askopenfile
@@ -35,10 +36,20 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem69" # Mac    (variacao de)
+serialName = "/dev/tty.usbmodem79" # Mac    (variacao de)
 #serialName = "COM15"                  # Windows(variacao de)
 
 
+
+def progress(count, total, status=''):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+
+    percents = round(100.0 * count / float(total), 1)
+    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.flush() 
 
 print("porta COM aberta com sucesso")
 
@@ -151,6 +162,7 @@ def main():
     #HEAD
     #tamanhoEmByte = bytes([txLen])
     while tipo != 7:
+
         if tipo == 1:
             #print("Tipo (1):             ", tipo)
             txBuffer0 = bytes(1)
@@ -214,6 +226,8 @@ def main():
             print("*************************************************************")
             tipo = 3
             #print("Tipo (1):             ", tipo)
+        print(progress(countP, npacote))
+
 
     print("-------------------------")
     print("Enviado corretamente")
