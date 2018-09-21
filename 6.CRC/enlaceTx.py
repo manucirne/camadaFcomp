@@ -48,10 +48,10 @@ class TX(object):
                 txLen = len(self.buffer)
                 baudrate = 115200
                 
-                print("-------------------------")
-                print("Tempo Esperado:   ", (10)*txLen/baudrate,"s")
-                print("Tempo Medido:     ", deltaT,"s") 
-                print("-------------------------")
+                # print("-------------------------")
+                # print("Tempo Esperado:   ", (10)*txLen/baudrate,"s")
+                # print("Tempo Medido:     ", deltaT,"s") 
+                # print("-------------------------")
 
     def threadStart(self):
         """ Starts TX thread (generate and run)
@@ -132,7 +132,7 @@ def CRCenvia(data: bytes):
     CRC-16-ModBus Algorithm
     '''
     resto = CRC16().calculate(data)
-    print("Resto no CRC (calculado):       ", resto)
+    #print("Resto no CRC (calculado):       ", resto)
 
     return resto
         
@@ -167,8 +167,13 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual):
         #print("Pacote                  ", pacote)
     else:
         pacote = txBuffer[Pinicio:]
-    print("pacote:      ", pacote)
+    # print("pacote:      ", pacote)
     resto = CRCenvia(pacote)
+    if tipo == 4:
+        print("-------------------------")
+        print("Resto calculado CRC:    ", resto)
+        print("-------------------------")
+
     #print("txLen: ",txLen)
     #print("tamanho pacote atual: ",len(pacote))
     tamanhoEmByte = (len(pacote)).to_bytes(2,byteorder='big')
@@ -188,16 +193,19 @@ def empacotamento(txBuffer, txLen, end, stuffing, tipo, pacoteatual):
     overhead = len(payload)/len(txBuffer)
     #throughput = payload/deltaT
 
-    print("-------------------------")
-    print("OverHead:     ", overhead, "%")
-    print("Tipo:              ", tipo)
-    #print("Throughput:       ", throughput,"bytes/s") 
-    print("Head: ",head)
-    print("Stuffing: ",stuffing)
-    print("EOF: ",end)
-    print("Número de pacotes:         " , npacote)
-    print("Pacote atual:         " , pacoteatual)
-    print("-------------------------")
+    
+    # print("OverHead:     ", overhead, "%")
+    # print("Tipo:              ", tipo)
+    # #print("Throughput:       ", throughput,"bytes/s") 
+    # print("Head: ",head)
+    # print("Stuffing: ",stuffing)
+    # print("EOF: ",end)
+    
+    if tipo == bytes([4]):
+        print("-------------------------")
+        print("Número de pacotes:         " , npacote)
+        print("Pacote atual:          ", pacoteatual)
+        print("-------------------------")
 
     return txBuffer, npacote
 

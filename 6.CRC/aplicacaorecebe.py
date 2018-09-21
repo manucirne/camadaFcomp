@@ -25,8 +25,8 @@ import sys
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
-#serialName = "COM7"                   # Windows(variacao de)
+#serialName = "/dev/tty.usbmodem1421"   # Mac    (variacao de)
+serialName = "COM11"                   # Windows(variacao de)
 
 
 
@@ -37,10 +37,13 @@ def progress(count, total, status=''):
     filled_len = int(round(bar_len * count / float(total)))
 
     percents = round(100.0 * count / float(total), 1)
-    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+    bar = '#' * filled_len + '-' * (bar_len - filled_len)
+    
+    status = 'Recebido'
 
-    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
-    sys.stdout.flush() 
+    #sys.stdout.write(' |%s| %s%s ...%s\r' % (bar, percents, '%', status))
+    print("|%s| %s %s ... %s \r" % (bar,percents,'%', status))
+    #sys.stdout.flush() 
 
 def main():
     # Inicializa enlace ... variavel com possui todos os metodos e propriedades do enlace, que funciona em threading
@@ -105,7 +108,7 @@ def main():
             
             #print("lenBuffer", len(rxBuffer))
             
-            print("Tipo (5,6, 7 ou 8):             ", tipo)
+            # print("Tipo (5,6, 7 ou 8):             ", tipo)
             if tipo == 5:
                 txBuffer, npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo,pacoteatual)
                 com.sendData(txBuffer)  
@@ -113,11 +116,11 @@ def main():
                     tipo = 3
                     npacoteesperado += 1
                     rxBufferDF += rxBuffer[8:inicioEOP+1]
-                    print("rxBufferD:::::::::::::::::", rxBufferDF)
+                    # print("rxBufferD:::::::::::::::::", rxBufferDF)
                 if pacoteatual == npacote:
                     with open("recebida.png", "wb+") as imageFile:
                         imagemrecebida = imageFile.write(rxBufferDF)
-                    print("Tamanho total:      ", len(rxBuffer))
+                    print("Tamanho total do Pacote:      ", len(rxBufferDF))
                     tipo = 7   
                                      
         if tipo == 6:
@@ -135,7 +138,7 @@ def main():
             txBuffer, npacote0 = empacotamento(bytes(1), 1, end, stuffing, tipo, npacoteesperado)
             tipo = 3
             com.sendData(txBuffer)
-        print(progress(pacoteatual, npacote))
+        progress(pacoteatual, npacote)
 
     
     
@@ -147,10 +150,10 @@ def main():
 
 
     # log
-    print ("Lido              {} bytes ".format(rxBuffer[8:inicioEOP+1])) 
-    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-    print ("rxBuffer apos retirada: ", rxBuffer)
-    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    # print ("Lido              {} bytes ".format(rxBuffer[8:inicioEOP+1])) 
+    # print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    # print ("rxBuffer apos retirada: ", rxBuffer)
+    # print(". . . . . . . . . . . . . . . . . . . . . . . . . . . ")
 
 
     # Encerra comunicação

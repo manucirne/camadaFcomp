@@ -36,8 +36,8 @@ fname = "null"
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/tty.usbmodem79" # Mac    (variacao de)
-#serialName = "COM15"                  # Windows(variacao de)
+#serialName = "/dev/tty.usbmodem79" # Mac    (variacao de)
+serialName = "COM9"                  # Windows(variacao de)
 
 
 
@@ -46,11 +46,13 @@ def progress(count, total, status=''):
     filled_len = int(round(bar_len * count / float(total)))
 
     percents = round(100.0 * count / float(total), 1)
-    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+    bar = '#' * filled_len + '-' * (bar_len - filled_len)
 
-    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
-    sys.stdout.flush() 
+    status = 'Enviado'
 
+    #sys.stdout.write(' |%s| %s%s ...%s\r' % (bar, percents, '%', status))
+    print("|%s| %s %s ... %s \r" % (bar,percents,'%', status))
+    #sys.stdout.flush() 
 print("porta COM aberta com sucesso")
 
 
@@ -226,9 +228,9 @@ def main():
             print("*************************************************************")
             tipo = 3
             #print("Tipo (1):             ", tipo)
-        print(progress(countP, npacote))
+        progress(countP, npacote)
 
-
+    print("Tamanho Total do Pacote:           ", txLen)
     print("-------------------------")
     print("Enviado corretamente")
     print("-------------------------")

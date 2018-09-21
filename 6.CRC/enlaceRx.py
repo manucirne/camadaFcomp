@@ -151,7 +151,7 @@ def CRCrecebe(data: bytes):
     CRC-16-ModBus Algorithm
     '''
     resto = CRC16().calculate(data)
-    print("Resto no CRC (calculado):       ", resto)
+    # print("Resto no CRC (calculado):       ", resto)
 
     return resto
 
@@ -160,16 +160,19 @@ def desempacotamento(rxBuffer, end, stuffing, npacoteesperado):
     #print("rxBuffer:    ", rxBuffer)
     EOP_encontrado = False
     npacote = rxBuffer[4]
-    print("-----------------------------------------------")
-    print("Número de pacotes:           ", npacote)
     pacoteatual = rxBuffer[3]
-    print("Pacote atual:          ", pacoteatual)
-    print("-----------------------------------------------")
+    
     cont_s = 0
-    tipo = 1
+    tipo = rxBuffer[5]
     head = rxBuffer[:8]
     inicioEOP = 0
     rxBufferCRC = rxBuffer[8:-5]
+    
+    if tipo == 4:
+        print("-----------------------------------------------")
+        print("Número de pacotes:           ", npacote)
+        print("Pacote atual:          ", pacoteatual)
+        print("-----------------------------------------------")
 
 
     for i in range(8, len(rxBuffer)): 
@@ -184,22 +187,26 @@ def desempacotamento(rxBuffer, end, stuffing, npacoteesperado):
 
             else:
                 tamanho_recebido = i-7+cont_s
-                print("Tamanho Informado no Head:    ", tamanho_esperado)
-                print("Tamanho da mensagem recebida: ", tamanho_recebido)
+                # print("Tamanho Informado no Head:    ", tamanho_esperado)
+                # print("Tamanho da mensagem recebida: ", tamanho_recebido)
                 inicioEOP = i
-                print("Posição de início do EOP:     ", inicioEOP)
-                print("Encontramos o fim!! :)")
+                # print("Posição de início do EOP:     ", inicioEOP)
+                # print("Encontramos o fim!! :)")
                 EOP_encontrado = True
                 rxBuffer = rxBuffer[8:i+1]
                 #if tamanho_esperado > 1:
                 tipo = 5
-    print("head:    ", head)
+    # print("head:    ", head)
     resto = head[1:3]
-    print("resto1:    ", resto)
+    # print("resto1:    ", resto)
     resto = int.from_bytes(resto, byteorder="big")
-    print("resto int from bytes: -------------------  ", resto)
-    print("Resto do CRC:     ", CRCrecebe(rxBufferCRC))
-    print("RxBuffer:   ", rxBufferCRC)
+    print("-------------------------")
+    print("Resto calculado CRC:    ", resto)
+    print("-------------------------")
+    # print("resto int from bytes: -------------------  ", resto)
+    # print("Resto do CRC:     ", CRCrecebe(rxBufferCRC))
+    # print("RxBuffer:   ", rxBufferCRC)
+    
 
 
     if resto != CRCrecebe(rxBufferCRC):          ############# RxBuffer???????????
